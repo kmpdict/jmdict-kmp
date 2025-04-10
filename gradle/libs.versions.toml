@@ -1,0 +1,14 @@
+[versions]
+agp = "8.9.1"
+kotlin = "2.1.20"
+
+kotlinx-io = "0.7.0"
+
+[libraries]
+kotlinx-serialization-xml = { module = "io.github.pdvrieze.xmlutil:serialization", version = "0.91.0" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
