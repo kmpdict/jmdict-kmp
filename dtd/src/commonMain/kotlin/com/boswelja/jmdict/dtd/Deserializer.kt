@@ -85,20 +85,22 @@ internal fun buildTypeDefinition(
 ): DocumentTypeDefinition {
     val rootElementDto = elements.firstOrNull { it.name == rootElementName }
     requireNotNull(rootElementDto) { "No root element found matching `$rootElementName`! Checked $elements"}
-    val rootElement = buildChildElementDefinition(rootElementDto, elements, attributes)
+    val rootElement = buildChildElementDefinition(rootElementName, rootElementDto, elements, attributes)
+    val entities = internalEntities.map { Entity.Internal(it.name, it.value) } +
+            externalEntities.map { Entity.External(it.name, it.uri) }
 
     return DocumentTypeDefinition(
         rootElement = (rootElement as ChildElementDefinition.Single).elementDefinition,
-        entities = emptyList() // TODO
+        entities = entities
     )
 }
 
 internal fun buildChildElementDefinition(
+    elementNameWithOccurs: String,
     element: ElementDto,
     elements: List<ElementDto>,
     attributes: List<AttributeDto>,
 ): ChildElementDefinition {
-    val elementNameWithOccurs = element.name
     val occurs = when {
         elementNameWithOccurs.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
         elementNameWithOccurs.endsWith("*") -> ChildElementDefinition.Occurs.ZeroOrMore
@@ -118,15 +120,44 @@ internal fun buildChildElementDefinition(
                     .map { buildAttribute(it) },
                 children = element.children
                     .map { childName ->
-                        elements.first {
-                            println("Checking ${it.name} == $childName")
-                            it.name == childName
+                        if (childName.startsWith("(")) {
+                            val occurs = when {
+                                childName.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
+                                childName.endsWith("*") -> ChildElementDefinition.Occurs.ZeroOrMore
+                                childName.endsWith("?") -> ChildElementDefinition.Occurs.AtMostOnce
+                                else -> ChildElementDefinition.Occurs.Once
+                            }
+                            val childName = childName
                                 .removeSuffix("?")
                                 .removeSuffix("*")
                                 .removeSuffix("+")
+                            val children = childName.removeSurrounding("(", ")")
+                                .split("|")
+                                .map { childName ->
+                                    val element = elements.first {
+                                        println("Checking ${it.name} == $childName")
+                                        it.name == childName
+                                            .removeSuffix("?")
+                                            .removeSuffix("*")
+                                            .removeSuffix("+")
+                                    }
+                                    buildChildElementDefinition(childName, element, elements, attributes)
+                                }
+                            ChildElementDefinition.Either(
+                                occurs = occurs,
+                                options = children
+                            )
+                        } else {
+                            val element = elements.first {
+                                println("Checking ${it.name} == $childName")
+                                it.name == childName
+                                    .removeSuffix("?")
+                                    .removeSuffix("*")
+                                    .removeSuffix("+")
+                            }
+                            buildChildElementDefinition(childName, element, elements, attributes)
                         }
                     }
-                    .map { buildChildElementDefinition(it, elements, attributes) }
             )
         }
         element.children.isEmpty() -> {
@@ -161,13 +192,13 @@ internal fun buildChildElementDefinition(
                     .map { buildAttribute(it) },
                 children = element.children
                     .map { childName ->
-                        elements.first {
+                        val element = elements.first {
                             it.name == childName.removeSuffix("?")
                                 .removeSuffix("*")
                                 .removeSuffix("+")
                         }
+                        buildChildElementDefinition(childName, element, elements, attributes)
                     }
-                    .map { buildChildElementDefinition(it, elements, attributes) }
             )
         }
     }
