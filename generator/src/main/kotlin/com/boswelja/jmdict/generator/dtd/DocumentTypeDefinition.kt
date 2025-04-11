@@ -1,4 +1,4 @@
-package com.boswelja.jmdict.dtd
+package com.boswelja.jmdict.generator.dtd
 
 /**
  * Defines the structure and the legal elements and attributes of an XML document.

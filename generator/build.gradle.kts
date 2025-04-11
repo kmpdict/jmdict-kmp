@@ -1,0 +1,25 @@
+plugins {
+    id("java-gradle-plugin")
+    alias(libs.plugins.kotlin.jvm)
+}
+
+gradlePlugin {
+    plugins {
+        create("com.boswelja.jmdict") {
+            id = "com.boswelja.jmdict.generator"
+            implementationClass = "com.boswelja.jmdict.generator.JmDictGeneratorPlugin"
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+dependencies {
+    implementation(libs.square.kotlinpoet)
+    implementation(libs.kotlinx.io.core)
+    implementation(libs.kotlin.plugin)
+
+    testImplementation(libs.kotlin.test)
+}

@@ -2,7 +2,18 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="generator.jvmMain" target="21" />
+      <module name="generator.jvmTest" target="21" />
       <module name="jmdict-kmp.app" target="21" />
+      <module name="jmdict-kmp.dataclass" target="21" />
+      <module name="jmdict-kmp.dataclass.jvmMain" target="21" />
+      <module name="jmdict-kmp.dataclass.jvmTest" target="21" />
+      <module name="jmdict-kmp.dtd" target="21" />
+      <module name="jmdict-kmp.dtd.jvmMain" target="21" />
+      <module name="jmdict-kmp.dtd.jvmTest" target="21" />
+      <module name="jmdict-kmp.generator" target="21" />
+      <module name="jmdict-kmp.generator.jvmMain" target="21" />
+      <module name="jmdict-kmp.generator.jvmTest" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

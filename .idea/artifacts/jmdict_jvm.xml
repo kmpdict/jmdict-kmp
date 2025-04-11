@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="jmdict-jvm">
+    <output-path>$PROJECT_DIR$/jmdict/build/libs</output-path>
+    <root id="archive" name="jmdict-jvm.jar">
+      <element id="module-output" name="jmdict-kmp.jmdict.jvmMain" />
+    </root>
+  </artifact>
+</component>

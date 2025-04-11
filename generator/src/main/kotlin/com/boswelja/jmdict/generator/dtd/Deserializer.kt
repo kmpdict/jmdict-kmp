@@ -1,4 +1,4 @@
-package com.boswelja.jmdict.dtd
+package com.boswelja.jmdict.generator.dtd
 
 import kotlinx.io.Source
 import kotlinx.io.readLine
