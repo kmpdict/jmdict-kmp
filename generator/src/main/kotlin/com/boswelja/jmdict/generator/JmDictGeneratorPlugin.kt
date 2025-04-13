@@ -30,10 +30,12 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             ExtensionName,
             JmDictExtension::class.java
         )
-        config.jmDictUrl.convention(URI("http://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
+        config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
         val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/")
-        val extractedJmDictDir = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
+        val jmDictFile = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
+        val relNotesFile = target.layout.buildDirectory.file("resources/jmdict/changelog.xml")
+        val dtdFile = target.layout.buildDirectory.file("resources/jmdict/dtd.xml")
 
         // Configure KMP projects
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
@@ -42,8 +44,12 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 "downloadJmDict",
                 DownloadJmDictTask::class.java
             ) {
+                requireProperty(config::jmDictUrl, "ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
+
                 it.jmDictUrl.set(config.jmDictUrl)
-                it.outputFile.set(extractedJmDictDir)
+                it.outputJmDict.set(jmDictFile)
+                it.outputDtd.set(dtdFile)
+                it.outputReleaseNotes.set(relNotesFile)
             }
 
             // Register the generation tasks
@@ -57,17 +63,12 @@ class JmDictGeneratorPlugin : Plugin<Project> {
 
                 it.outputDirectory.set(targetGeneratedSourcesDir)
                 it.packageName.set(config.packageName)
-                it.jmDictXml.set(downloadJmDictTask.get().outputFile)
-            }
-            val generateDatabaseTask = target.tasks.register("generateJmDictDatabase") {
-                requireProperty(config::packageName, "\"com.my.package\"")
-
-                it.dependsOn(downloadJmDictTask)
+                it.jmDictXml.set(downloadJmDictTask.get().outputJmDict)
             }
 
             // Add generation tasks as dependencies for build task
             target.tasks.withType(KotlinCompile::class.java).configureEach {
-                it.dependsOn(generateDatabaseTask, generateDataClassTask)
+                it.dependsOn(generateDataClassTask)
             }
 
             // Add the generated source dir to the common source set

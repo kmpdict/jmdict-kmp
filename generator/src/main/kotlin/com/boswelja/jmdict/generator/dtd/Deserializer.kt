@@ -21,7 +21,7 @@ fun DocumentTypeDefinition.Companion.fromSource(source: Source): DocumentTypeDef
     val attributes = mutableListOf<AttributeDto>()
 
     line = source.readLine()?.trim()
-    while (line != null) {
+    while (line != null && line != "]>") {
         if (!line.startsWith("<")) {
             // We're not at the start of a tag, so we can skip this line
             line = source.readLine()?.trim()

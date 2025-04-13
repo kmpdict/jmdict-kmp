@@ -18,17 +18,52 @@ abstract class DownloadJmDictTask : DefaultTask() {
     abstract val jmDictUrl: Property<URI>
 
     /**
-     * The directory to store the downloaded content.
+     * The file to store the output jmdict.
      */
     @get:OutputFile
-    abstract val outputFile: RegularFileProperty
+    abstract val outputJmDict: RegularFileProperty
+
+    @get:OutputFile
+    abstract val outputDtd: RegularFileProperty
+
+    @get:OutputFile
+    abstract val outputReleaseNotes: RegularFileProperty
 
     @TaskAction
     fun downloadAndUnpackJmDict() {
-        outputFile.get().asFile.outputStream().use { out ->
-            GZIPInputStream(jmDictUrl.get().toURL().openStream()).use { inp ->
-                inp.copyTo(out)
+        val jmDictStream = outputJmDict.get().asFile.outputStream().writer()
+        val releaseNotesOutputStream = outputReleaseNotes.get().asFile.outputStream().writer()
+        val dtdOutputStream = outputDtd.get().asFile.outputStream().writer()
+
+        val urlConnection = jmDictUrl.get().toURL().openConnection()
+        val inStream = GZIPInputStream(urlConnection.inputStream).bufferedReader()
+        try {
+            var finishedRelNotes = false
+            var finishedDtd = false
+            var line = inStream.readLine()
+            while (line != null) {
+                if (!finishedRelNotes) {
+                    if (line.startsWith("<!DOCTYPE")) {
+                        finishedRelNotes = true
+                        dtdOutputStream.appendLine(line)
+                    } else {
+                        releaseNotesOutputStream.appendLine(line)
+                    }
+                } else if (!finishedDtd) {
+                    jmDictStream.appendLine(line)
+                    if (line.startsWith("]>")) {
+                        finishedDtd = true
+                    }
+                } else {
+                    jmDictStream.appendLine(line)
+                }
+                line = inStream.readLine()
             }
+        } finally {
+            jmDictStream.close()
+            releaseNotesOutputStream.close()
+            dtdOutputStream.close()
+            inStream.close()
         }
     }
 }
