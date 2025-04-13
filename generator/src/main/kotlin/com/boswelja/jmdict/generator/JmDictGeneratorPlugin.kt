@@ -63,7 +63,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
 
                 it.outputDirectory.set(targetGeneratedSourcesDir)
                 it.packageName.set(config.packageName)
-                it.jmDictXml.set(downloadJmDictTask.get().outputJmDict)
+                it.dtdFile.set(downloadJmDictTask.get().outputDtd)
             }
 
             // Add generation tasks as dependencies for build task

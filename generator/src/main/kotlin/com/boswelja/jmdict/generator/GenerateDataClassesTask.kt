@@ -28,11 +28,11 @@ abstract class GenerateDataClassesTask : DefaultTask() {
     abstract val packageName: Property<String>
 
     @get:InputFile
-    abstract val jmDictXml: RegularFileProperty
+    abstract val dtdFile: RegularFileProperty
 
     @TaskAction
     fun generateDataClasses() {
-        val jmDict = jmDictXml.get().asFile.inputStream().asSource().buffered()
+        val jmDict = dtdFile.get().asFile.inputStream().asSource().buffered()
         val definition = DocumentTypeDefinition.fromSource(jmDict)
     }
 }
