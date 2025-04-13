@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.1"
 kotlin = "2.1.20"
+compose = "1.7.3"
 
 kotlinx-io = "0.7.0"
 
@@ -12,9 +13,12 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlinx-serialization-xml = { module = "io.github.pdvrieze.xmlutil:serialization", version = "0.91.0" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 square-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+compose-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }

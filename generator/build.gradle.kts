@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.square.kotlinpoet)
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlin.plugin)
+    implementation(libs.compose.plugin)
 
     testImplementation(libs.kotlin.test)
 }
