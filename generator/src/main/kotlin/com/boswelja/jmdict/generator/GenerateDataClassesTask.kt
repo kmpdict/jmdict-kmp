@@ -1,5 +1,6 @@
 package com.boswelja.jmdict.generator
 
+import com.boswelja.jmdict.generator.dataclass.DataClassGenerator
 import com.boswelja.jmdict.generator.dtd.DocumentTypeDefinition
 import com.boswelja.jmdict.generator.dtd.fromSource
 import kotlinx.io.asSource
@@ -32,7 +33,9 @@ abstract class GenerateDataClassesTask : DefaultTask() {
 
     @TaskAction
     fun generateDataClasses() {
+        val generator = DataClassGenerator(outputDirectory.get().asFile.toPath())
         val jmDict = dtdFile.get().asFile.inputStream().asSource().buffered()
         val definition = DocumentTypeDefinition.fromSource(jmDict)
+        generator.writeDtdToTarget(definition)
     }
 }
