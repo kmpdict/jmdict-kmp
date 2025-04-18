@@ -11,6 +11,8 @@ class NameProcessorTest {
             "camelCase" to "CamelCase",
             "kebab-case" to "KebabCase",
             "snake_case" to "SnakeCase",
+            "SCREAMING-KEBAB" to "ScreamingKebab",
+            "SCREAMING_SNAKE" to "ScreamingSnake",
             "" to ""
         )
 
@@ -21,6 +23,7 @@ class NameProcessorTest {
             )
         }
     }
+
     @Test
     fun `toCamelCase()`() {
         val testCases = mapOf(
@@ -28,6 +31,8 @@ class NameProcessorTest {
             "PascalCase" to "pascalCase",
             "kebab-case" to "kebabCase",
             "snake_case" to "snakeCase",
+            "SCREAMING-KEBAB" to "screamingKebab",
+            "SCREAMING_SNAKE" to "screamingSnake",
             "" to ""
         )
 
