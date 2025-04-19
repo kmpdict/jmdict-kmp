@@ -135,7 +135,6 @@ internal fun buildChildElementDefinition(
                                 .split("|")
                                 .map { childName ->
                                     val element = elements.first {
-                                        println("Checking ${it.name} == $childName")
                                         it.name == childName
                                             .removeSuffix("?")
                                             .removeSuffix("*")
@@ -149,7 +148,6 @@ internal fun buildChildElementDefinition(
                             )
                         } else {
                             val element = elements.first {
-                                println("Checking ${it.name} == $childName")
                                 it.name == childName
                                     .removeSuffix("?")
                                     .removeSuffix("*")
