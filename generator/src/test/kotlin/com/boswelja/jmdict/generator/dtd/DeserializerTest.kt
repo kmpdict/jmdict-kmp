@@ -42,7 +42,7 @@ class DeserializerTest {
                 <!ATTLIST PROGRAMSLOT VTR CDATA #IMPLIED>
                 <!ATTLIST TITLE RATING CDATA #IMPLIED>
                 <!ATTLIST TITLE LANGUAGE CDATA #IMPLIED>
-                ]> 
+                ]>
             """.trimIndent() to
                     DocumentTypeDefinition(
                         rootElement = ElementDefinition.Mixed(

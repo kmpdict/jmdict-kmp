@@ -33,7 +33,7 @@ abstract class GenerateDataClassesTask : DefaultTask() {
 
     @TaskAction
     fun generateDataClasses() {
-        val generator = DataClassGenerator(outputDirectory.get().asFile.toPath())
+        val generator = DataClassGenerator(packageName.get(), outputDirectory.get().asFile.toPath())
         val jmDict = dtdFile.get().asFile.inputStream().asSource().buffered()
         val definition = DocumentTypeDefinition.fromSource(jmDict)
         generator.writeDtdToTarget(definition)
