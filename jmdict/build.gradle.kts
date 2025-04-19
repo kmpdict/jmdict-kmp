@@ -26,5 +26,4 @@ android {
 
 jmDict {
     packageName = "com.boswelja.jmdict"
-    jmDictUrl = URI("https://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
 }

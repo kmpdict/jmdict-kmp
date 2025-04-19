@@ -50,7 +50,7 @@ abstract class DownloadJmDictTask : DefaultTask() {
                         releaseNotesOutputStream.appendLine(line)
                     }
                 } else if (!finishedDtd) {
-                    jmDictStream.appendLine(line)
+                    dtdOutputStream.appendLine(line)
                     if (line.startsWith("]>")) {
                         finishedDtd = true
                     }
