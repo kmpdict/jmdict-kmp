@@ -111,12 +111,12 @@ class DataClassGeneratorTest {
     fun `testGenerateDataClasses should generate nested elements`() {
         val testCases = mapOf(
             DocumentTypeDefinition(
-                rootElement = ElementDefinition.Mixed(
+                rootElement = ElementDefinition.WithChildren(
                     elementName = "NESTED",
                     attributes = emptyList(),
                     children = listOf(
                         ChildElementDefinition.Single(
-                            elementDefinition = ElementDefinition.Mixed(
+                            elementDefinition = ElementDefinition.WithChildren(
                                 elementName = "ARTICLE",
                                 attributes = listOf(
                                     AttributeDefinition(

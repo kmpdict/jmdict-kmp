@@ -103,14 +103,23 @@ sealed interface ElementDefinition {
     ) : ElementDefinition
 
     /**
-     * The element has one or more child elements. For example, in `!ELEMENT note (title, description)`
-     * there is a title and a description within `note`, but they do not have to appear together.
-     * This includes DTD "Mixed" definition, which may include [ParsedCharacterData].
+     * The element has a sequence of children. For example, in `!ELEMENT note (title, description)`
+     * there is a title and a description within `note`. Children under this element are ordered,
+     * such that in the above example `title` will appear before `description`.
+     */
+    data class WithChildren(
+        override val elementName: String,
+        override val attributes: List<AttributeDefinition>,
+        val children: List<ChildElementDefinition>,
+    ) : ElementDefinition
+
+    /**
+     * The element has zero or more occurrences of its children, in any order.
      */
     data class Mixed(
         override val elementName: String,
         override val attributes: List<AttributeDefinition>,
-        val children: List<ChildElementDefinition>,
+        val children: List<ElementDefinition>,
     ) : ElementDefinition
 }
 

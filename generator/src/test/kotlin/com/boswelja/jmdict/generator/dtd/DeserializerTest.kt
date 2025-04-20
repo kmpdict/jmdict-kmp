@@ -45,7 +45,7 @@ class DeserializerTest {
                 ]>
             """.trimIndent() to
                     DocumentTypeDefinition(
-                        rootElement = ElementDefinition.Mixed(
+                        rootElement = ElementDefinition.WithChildren(
                             elementName = "TVSCHEDULE",
                             attributes = listOf(
                                 AttributeDefinition(
@@ -56,7 +56,7 @@ class DeserializerTest {
                             ),
                             children = listOf(
                                 ChildElementDefinition.Single(
-                                    elementDefinition = ElementDefinition.Mixed(
+                                    elementDefinition = ElementDefinition.WithChildren(
                                         elementName = "CHANNEL",
                                         attributes = listOf(
                                             AttributeDefinition(
@@ -74,7 +74,7 @@ class DeserializerTest {
                                                 occurs = ChildElementDefinition.Occurs.Once
                                             ),
                                             ChildElementDefinition.Single(
-                                                elementDefinition = ElementDefinition.Mixed(
+                                                elementDefinition = ElementDefinition.WithChildren(
                                                     elementName = "DAY",
                                                     attributes = emptyList(),
                                                     children = listOf(
@@ -95,7 +95,7 @@ class DeserializerTest {
                                                                     occurs = ChildElementDefinition.Occurs.Once
                                                                 ),
                                                                 ChildElementDefinition.Single(
-                                                                    elementDefinition = ElementDefinition.Mixed(
+                                                                    elementDefinition = ElementDefinition.WithChildren(
                                                                         elementName = "PROGRAMSLOT",
                                                                         attributes = listOf(
                                                                             AttributeDefinition(
@@ -179,12 +179,12 @@ class DeserializerTest {
                 ]> 
             """.trimIndent() to
                     DocumentTypeDefinition(
-                        rootElement = ElementDefinition.Mixed(
+                        rootElement = ElementDefinition.WithChildren(
                             elementName = "NEWSPAPER",
                             attributes = emptyList(),
                             children = listOf(
                                 ChildElementDefinition.Single(
-                                    elementDefinition = ElementDefinition.Mixed(
+                                    elementDefinition = ElementDefinition.WithChildren(
                                         elementName = "ARTICLE",
                                         attributes = listOf(
                                             AttributeDefinition(
@@ -264,7 +264,24 @@ class DeserializerTest {
                                 value = "Copyright 1998 Vervet Logic Press"
                             )
                         )
-                    )
+                    ),
+            """
+                <!DOCTYPE HOLIDAY [
+                <!ELEMENT HOLIDAY (#PCDATA)*>
+                ]>
+            """.trimIndent() to DocumentTypeDefinition(
+                rootElement = ElementDefinition.Mixed(
+                    elementName = "HOLIDAY",
+                    attributes = emptyList(),
+                    children = listOf(
+                        ElementDefinition.ParsedCharacterData(
+                            elementName = "#PCDATA",
+                            attributes = emptyList()
+                        ),
+                    ),
+                ),
+                entities = emptyList()
+            )
         )
     }
 }

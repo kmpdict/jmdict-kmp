@@ -113,7 +113,7 @@ internal fun buildChildElementDefinition(
         .removeSuffix("+")
     val element = when {
         element.children.size > 1 -> {
-            ElementDefinition.Mixed(
+            ElementDefinition.WithChildren(
                 elementName = elementName,
                 attributes = attributes
                     .filter { it.elementName == elementName }
@@ -183,7 +183,7 @@ internal fun buildChildElementDefinition(
             )
         }
         else -> {
-            ElementDefinition.Mixed(
+            ElementDefinition.WithChildren(
                 elementName = elementName,
                 attributes = attributes
                     .filter { it.elementName == elementName }

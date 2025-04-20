@@ -44,6 +44,25 @@ class DataClassGenerator(
         when (element) {
             is ElementDefinition.Empty -> { /* Nothing to add */ }
             is ElementDefinition.Mixed -> {
+                element.children.forEach { elementDefinition ->
+                    val typeSpec = generateTypeSpecForElement(elementDefinition)
+                    types.addAll(typeSpec.topLevelTypes)
+
+                    val propertyName = "${typeSpec.rootClassName.simpleName.toCamelCase()}s"
+                    val propertyType = List::class.asClassName().parameterizedBy(typeSpec.rootClassName)
+                    parameters.add(
+                        ParameterSpec.builder(propertyName, propertyType)
+                            .build()
+                    )
+                    properties.add(
+                        PropertySpec.builder(propertyName, propertyType)
+                            .addModifiers(KModifier.PUBLIC)
+                            .initializer(propertyName)
+                            .build()
+                    )
+                }
+            }
+            is ElementDefinition.WithChildren -> {
                 generatePropertiesForChildren(element.children).also {
                     parameters.addAll(it.parameters)
                     properties.addAll(it.properties)
