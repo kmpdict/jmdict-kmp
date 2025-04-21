@@ -36,10 +36,17 @@ fun DocumentTypeDefinition.Companion.fromSource(source: Source): DocumentTypeDef
         // TODO this runs all checks every time - not good
         ElementRegex.find(line)?.let { matchResult ->
             val name = matchResult.groupValues[1]
-            val children = matchResult.groupValues[2]
-                .removeSurrounding("(", ")")
-                .split(",")
-            elements.add(ElementDto(name, children))
+            val isMixed = matchResult.groupValues[2].endsWith("*")
+            val children = if (isMixed) {
+                matchResult.groupValues[2]
+                    .removeSurrounding("(", ")*")
+                    .split(",")
+            } else {
+                matchResult.groupValues[2]
+                    .removeSurrounding("(", ")")
+                    .split(",")
+            }
+            elements.add(ElementDto(name, children, isMixed))
         }
         InternalEntityMatcher.find(line)?.let { matchResult ->
             val name = matchResult.groupValues[1]
@@ -112,91 +119,95 @@ internal fun buildChildElementDefinition(
         .removeSuffix("*")
         .removeSuffix("+")
     val element = when {
-        element.children.size > 1 -> {
-            ElementDefinition.WithChildren(
+        element.isMixed -> {
+            ElementDefinition.Mixed(
                 elementName = elementName,
                 attributes = attributes
                     .filter { it.elementName == elementName }
                     .map { buildAttribute(it) },
                 children = element.children
                     .map { childName ->
-                        if (childName.startsWith("(")) {
-                            val occurs = when {
-                                childName.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
-                                childName.endsWith("*") -> ChildElementDefinition.Occurs.ZeroOrMore
-                                childName.endsWith("?") -> ChildElementDefinition.Occurs.AtMostOnce
-                                else -> ChildElementDefinition.Occurs.Once
-                            }
-                            val childName = childName
-                                .removeSuffix("?")
-                                .removeSuffix("*")
-                                .removeSuffix("+")
-                            val children = childName.removeSurrounding("(", ")")
-                                .split("|")
-                                .map { childName ->
-                                    val element = elements.first {
-                                        it.name == childName
-                                            .removeSuffix("?")
-                                            .removeSuffix("*")
-                                            .removeSuffix("+")
-                                    }
-                                    buildChildElementDefinition(childName, element, elements, attributes)
-                                }
-                            ChildElementDefinition.Either(
-                                occurs = occurs,
-                                options = children
+                        if (childName == "#PCDATA") {
+                            ElementDefinition.ParsedCharacterData(
+                                elementName = childName,
+                                attributes = emptyList()
                             )
                         } else {
-                            val element = elements.first {
-                                it.name == childName
-                                    .removeSuffix("?")
-                                    .removeSuffix("*")
-                                    .removeSuffix("+")
-                            }
-                            buildChildElementDefinition(childName, element, elements, attributes)
+                            val element = elements.firstOrNull { it.name == childName }
+                            requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
+                            (buildChildElementDefinition(childName, element, elements, attributes) as ChildElementDefinition.Single).elementDefinition
                         }
                     }
             )
         }
-        element.children.isEmpty() -> {
+        element.children.isNotEmpty() -> {
+            if (element.children.size == 1 && element.children.first() == "#PCDATA") {
+                ElementDefinition.ParsedCharacterData(
+                    elementName = elementName,
+                    attributes = attributes
+                        .filter { it.elementName == elementName }
+                        .map { buildAttribute(it) }
+                )
+            } else if (element.children.size == 1 && element.children.first() == "ANY") {
+                ElementDefinition.Any(
+                    elementName = elementName,
+                    attributes = attributes
+                        .filter { it.elementName == elementName }
+                        .map { buildAttribute(it) }
+                )
+            } else {
+                ElementDefinition.WithChildren(
+                    elementName = elementName,
+                    attributes = attributes
+                        .filter { it.elementName == elementName }
+                        .map { buildAttribute(it) },
+                    children = element.children
+                        .map { childName ->
+                            if (childName.startsWith("(")) {
+                                val occurs = when {
+                                    childName.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
+                                    childName.endsWith("*") -> ChildElementDefinition.Occurs.ZeroOrMore
+                                    childName.endsWith("?") -> ChildElementDefinition.Occurs.AtMostOnce
+                                    else -> ChildElementDefinition.Occurs.Once
+                                }
+                                val childName = childName
+                                    .removeSuffix("?")
+                                    .removeSuffix("*")
+                                    .removeSuffix("+")
+                                val children = childName.removeSurrounding("(", ")")
+                                    .split("|")
+                                    .map { childName ->
+                                        val element = elements.first {
+                                            it.name == childName
+                                                .removeSuffix("?")
+                                                .removeSuffix("*")
+                                                .removeSuffix("+")
+                                        }
+                                        buildChildElementDefinition(childName, element, elements, attributes)
+                                    }
+                                ChildElementDefinition.Either(
+                                    occurs = occurs,
+                                    options = children
+                                )
+                            } else {
+                                val element = elements.first {
+                                    it.name == childName
+                                        .removeSuffix("?")
+                                        .removeSuffix("*")
+                                        .removeSuffix("+")
+                                }
+                                buildChildElementDefinition(childName, element, elements, attributes)
+                            }
+                        }
+                )
+            }
+        }
+        else -> {
             ElementDefinition.Empty(
                 elementName = elementName,
                 attributes = attributes
                     .filter { it.elementName == elementName }
                     .map { buildAttribute(it) }
-            )
-        }
-        element.children.all { it == "#PCDATA" } -> {
-            ElementDefinition.ParsedCharacterData(
-                elementName = elementName,
-                attributes = attributes
-                    .filter { it.elementName == elementName }
-                    .map { buildAttribute(it) }
-            )
-        }
-        element.children.all { it == "ANY" } -> {
-            ElementDefinition.Any(
-                elementName = elementName,
-                attributes = attributes
-                    .filter { it.elementName == elementName }
-                    .map { buildAttribute(it) }
-            )
-        }
-        else -> {
-            ElementDefinition.WithChildren(
-                elementName = elementName,
-                attributes = attributes
-                    .filter { it.elementName == elementName }
-                    .map { buildAttribute(it) },
-                children = element.children
-                    .map { childName ->
-                        val element = elements.first {
-                            it.name == childName.removeSuffix("?")
-                                .removeSuffix("*")
-                                .removeSuffix("+")
-                        }
-                        buildChildElementDefinition(childName, element, elements, attributes)
-                    }
             )
         }
     }
@@ -243,7 +254,7 @@ internal fun buildAttribute(attribute: AttributeDto): AttributeDefinition {
 
 internal val DoctypeRegex = Regex("<!DOCTYPE\\s+([a-zA-Z0-9_]+)\\s*\\[")
 
-internal val ElementRegex = Regex("<!ELEMENT\\s+([a-zA-Z0-9_]+)\\s+(\\(.+\\)|EMPTY|ANY)\\s*>")
+internal val ElementRegex = Regex("<!ELEMENT\\s+([a-zA-Z0-9_]+)\\s+(\\(.+\\)\\*?|EMPTY|ANY)\\s*>")
 
 internal val InternalEntityMatcher = Regex("<!ENTITY\\s+([a-zA-Z0-9_-]+)\\s+\"(.+)\"\\s*>")
 
@@ -254,6 +265,7 @@ internal val AttributeListRegex = Regex("<!ATTLIST\\s+([a-zA-Z0-9_-]+)\\s+([a-zA
 internal data class ElementDto(
     val name: String,
     val children: List<String>,
+    val isMixed: Boolean
 )
 
 internal class AttributeDto(
