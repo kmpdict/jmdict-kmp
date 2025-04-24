@@ -163,6 +163,7 @@ internal fun buildChildElementDefinition(
                         .map { buildAttribute(it) },
                     children = element.children
                         .map { childName ->
+                            val childName = childName.trim()
                             if (childName.startsWith("(")) {
                                 val occurs = when {
                                     childName.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
@@ -177,12 +178,13 @@ internal fun buildChildElementDefinition(
                                 val children = childName.removeSurrounding("(", ")")
                                     .split("|")
                                     .map { childName ->
-                                        val element = elements.first {
+                                        val element = elements.firstOrNull {
                                             it.name == childName
                                                 .removeSuffix("?")
                                                 .removeSuffix("*")
                                                 .removeSuffix("+")
                                         }
+                                        requireNotNull(element) { "Couldn't find an element with the name $childName!" }
                                         buildChildElementDefinition(childName, element, elements, attributes)
                                     }
                                 ChildElementDefinition.Either(
@@ -190,12 +192,13 @@ internal fun buildChildElementDefinition(
                                     options = children
                                 )
                             } else {
-                                val element = elements.first {
+                                val element = elements.firstOrNull {
                                     it.name == childName
                                         .removeSuffix("?")
                                         .removeSuffix("*")
                                         .removeSuffix("+")
                                 }
+                                requireNotNull(element) { "Couldn't find an element with the name $childName!" }
                                 buildChildElementDefinition(childName, element, elements, attributes)
                             }
                         }
@@ -230,10 +233,13 @@ internal fun buildAttribute(attribute: AttributeDto): AttributeDefinition {
         attribute.type == "NOTATION" -> AttributeDefinition.Type.Notation
         attribute.type == "xml:" -> AttributeDefinition.Type.Xml
         attribute.type.startsWith("(") && attribute.type.endsWith(")") -> {
-            val values = attribute.type.removeSurrounding("(", ")").split("|")
+            val values = attribute.type
+                .removeSurrounding("(", ")")
+                .split("|")
+                .map { it.trim() }
             AttributeDefinition.Type.Enum(values)
         }
-        else -> error("Unrecognized attribute type! ${attribute.type}")
+        else -> throw IllegalArgumentException("Unrecognized attribute type! ${attribute.type}")
     }
     val value = when {
         attribute.value == "#REQUIRED" -> AttributeDefinition.Value.Required
@@ -242,8 +248,9 @@ internal fun buildAttribute(attribute: AttributeDto): AttributeDefinition {
             val value = attribute.value.removeSurrounding("#FIXED \"", "\"")
             AttributeDefinition.Value.Fixed(value)
         }
-        attribute.value.startsWith("\"") && attribute.value.endsWith("\"") -> AttributeDefinition.Value.Default(attribute.value.removeSurrounding("\"", "\""))
-        else -> error("Unrecognized attribute value! ${attribute.value}")
+        attribute.value.startsWith("\"") && attribute.value.endsWith("\"") ->
+            AttributeDefinition.Value.Default(attribute.value.removeSurrounding("\"", "\""))
+        else -> throw IllegalArgumentException("Unrecognized attribute value! ${attribute.value}")
     }
     return AttributeDefinition(
         attributeName = attribute.attributeName,

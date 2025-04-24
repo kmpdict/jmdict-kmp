@@ -5,7 +5,53 @@ import kotlinx.io.writeString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DeserializerTest {
+class DeserializerE2ETest {
+
+    @Test
+    fun `when dtd element children contains spaces, then deserialize succeeds`() {
+        // Note the space between DATE and NAME in HOLIDAY
+        val dtd = """
+            <!DOCTYPE HOLIDAY [
+            <!ELEMENT HOLIDAY (DATE, NAME)>
+            <!ELEMENT DATE (#PCDATA)>
+            <!ELEMENT NAME (#PCDATA)>
+            ]>
+        """.trimIndent()
+        val expected = DocumentTypeDefinition(
+            rootElement = ElementDefinition.WithChildren(
+                elementName = "HOLIDAY",
+                children = listOf(
+                    ChildElementDefinition.Single(
+                        elementDefinition = ElementDefinition.ParsedCharacterData(
+                            elementName = "DATE",
+                            attributes = emptyList(),
+                        ),
+                        occurs = ChildElementDefinition.Occurs.Once,
+                    ),
+                    ChildElementDefinition.Single(
+                        elementDefinition = ElementDefinition.ParsedCharacterData(
+                            elementName = "NAME",
+                            attributes = emptyList(),
+                        ),
+                        occurs = ChildElementDefinition.Occurs.Once,
+                    ),
+                ),
+                attributes = emptyList()
+            ),
+            entities = emptyList(),
+        )
+
+        val source = Buffer()
+        source.writeString(dtd)
+        val result = DocumentTypeDefinition.fromSource(source)
+        source.close()
+
+        assertEquals(
+            expected,
+            result
+        )
+    }
+
     @Test
     fun `fromSource returns the correct type for valid DTD`() {
         ValidDtdSamples.forEach { (dtd, expected) ->
@@ -13,6 +59,8 @@ class DeserializerTest {
             source.writeString(dtd)
 
             val result = DocumentTypeDefinition.fromSource(source)
+
+            source.close()
 
             assertEquals(
                 expected,
