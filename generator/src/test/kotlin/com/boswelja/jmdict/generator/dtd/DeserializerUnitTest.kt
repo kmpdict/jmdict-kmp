@@ -88,15 +88,16 @@ class DeserializerUnitTest {
     }
 
     @Test
-    fun `buildChildElementDefinition fails when element children are missing`() {
+    fun `buildElementDefinition fails when element children are missing`() {
         val element = ElementDto(
             name = "element",
             children = listOf("child1", "child2"),
             isMixed = false,
         )
         assertFailsWith<IllegalArgumentException> {
-            buildChildElementDefinition(
-                elementNameWithOccurs = element.name,
+            buildElementDefinition(
+                element = element,
+                elementName = element.name,
                 elements = emptyList(),
                 attributes = emptyList()
             )
@@ -104,18 +105,75 @@ class DeserializerUnitTest {
     }
 
     @Test
-    fun `buildChildElementDefinition fails when mixed element children are missing`() {
+    fun `buildElementDefinition fails when mixed element children are missing`() {
         val element = ElementDto(
             name = "element",
             children = listOf("child1", "child2"),
             isMixed = true,
         )
         assertFailsWith<IllegalArgumentException> {
-            buildChildElementDefinition(
-                elementNameWithOccurs = element.name,
+            buildElementDefinition(
+                element = element,
+                elementName = element.name,
                 elements = emptyList(),
                 attributes = emptyList()
             )
         }
+    }
+
+    @Test
+    fun `buildElementDefinition succeeds when element consists of a single PCDATA`() {
+        val element = ElementDto(
+            name = "element",
+            children = listOf("#PCDATA"),
+            isMixed = false
+        )
+        assertEquals(
+            ElementDefinition.ParsedCharacterData(element.name, emptyList()),
+            buildElementDefinition(
+                element = element,
+                elementName = element.name,
+                elements = emptyList(),
+                attributes = emptyList(),
+            )
+        )
+    }
+
+    @Test
+    fun `buildElementDefinition succeeds when element consists of ANY`() {
+        val element = ElementDto(
+            name = "element",
+            children = listOf("ANY"),
+            isMixed = false
+        )
+
+        assertEquals(
+            ElementDefinition.Any(element.name, emptyList()),
+            buildElementDefinition(
+                element = element,
+                elementName = element.name,
+                elements = emptyList(),
+                attributes = emptyList()
+            )
+        )
+    }
+
+    @Test
+    fun `buildElementDefinition succeeds when element has no children`() {
+        val element = ElementDto(
+            name = "element",
+            children = emptyList(),
+            isMixed = false
+        )
+
+        assertEquals(
+            ElementDefinition.Empty(elementName = element.name, attributes = emptyList()),
+            buildElementDefinition(
+                element = element,
+                elementName = element.name,
+                elements = emptyList(),
+                attributes = emptyList()
+            )
+        )
     }
 }
