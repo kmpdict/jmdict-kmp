@@ -97,7 +97,6 @@ class DeserializerUnitTest {
         assertFailsWith<IllegalArgumentException> {
             buildChildElementDefinition(
                 elementNameWithOccurs = element.name,
-                element = element,
                 elements = emptyList(),
                 attributes = emptyList()
             )
@@ -114,7 +113,6 @@ class DeserializerUnitTest {
         assertFailsWith<IllegalArgumentException> {
             buildChildElementDefinition(
                 elementNameWithOccurs = element.name,
-                element = element,
                 elements = emptyList(),
                 attributes = emptyList()
             )

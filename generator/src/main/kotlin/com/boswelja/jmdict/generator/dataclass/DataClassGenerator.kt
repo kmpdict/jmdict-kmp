@@ -110,6 +110,7 @@ class DataClassGenerator(
                     )
                 }
             }
+            is ElementDefinition.Either -> TODO()
         }
 
         val rootType = if (parameters.isEmpty()) {

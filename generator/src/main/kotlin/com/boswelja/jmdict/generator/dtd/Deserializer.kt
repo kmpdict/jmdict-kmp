@@ -92,19 +92,18 @@ internal fun buildTypeDefinition(
 ): DocumentTypeDefinition {
     val rootElementDto = elements.firstOrNull { it.name == rootElementName }
     requireNotNull(rootElementDto) { "No root element found matching `$rootElementName`! Checked $elements"}
-    val rootElement = buildChildElementDefinition(rootElementName, rootElementDto, elements, attributes)
+    val rootElement = buildElementDefinition(rootElementDto, rootElementName, elements, attributes)
     val entities = internalEntities.map { Entity.Internal(it.name, it.value) } +
             externalEntities.map { Entity.External(it.name, it.uri) }
 
     return DocumentTypeDefinition(
-        rootElement = (rootElement as ChildElementDefinition.Single).elementDefinition,
+        rootElement = rootElement,
         entities = entities
     )
 }
 
 internal fun buildChildElementDefinition(
     elementNameWithOccurs: String,
-    element: ElementDto,
     elements: List<ElementDto>,
     attributes: List<AttributeDto>,
 ): ChildElementDefinition {
@@ -118,7 +117,40 @@ internal fun buildChildElementDefinition(
         .removeSuffix("?")
         .removeSuffix("*")
         .removeSuffix("+")
-    val element = when {
+    return if (elementName.startsWith("(")) {
+        val children = elementName.removeSurrounding("(", ")")
+            .split("|")
+            .map { childName ->
+                buildChildElementDefinition(childName.trim(), elements, attributes)
+            }
+        ChildElementDefinition.Either(
+            occurs = occurs,
+            options = children
+        )
+    } else {
+        val elementName = elementName
+            .removeSuffix("?")
+            .removeSuffix("*")
+            .removeSuffix("+")
+        val element = elements.firstOrNull {
+            it.name == elementName
+        }
+        requireNotNull(element) { "Couldn't find a child with the name $elementName in $elements" }
+        val elementDefinition = buildElementDefinition(element, elementName, elements, attributes)
+        ChildElementDefinition.Single(
+            occurs = occurs,
+            elementDefinition = elementDefinition
+        )
+    }
+}
+
+internal fun buildElementDefinition(
+    element: ElementDto,
+    elementName: String,
+    elements: List<ElementDto>,
+    attributes: List<AttributeDto>,
+): ElementDefinition {
+    return when {
         element.isMixed -> {
             ElementDefinition.Mixed(
                 elementName = elementName,
@@ -127,16 +159,10 @@ internal fun buildChildElementDefinition(
                     .map { buildAttribute(it) },
                 children = element.children
                     .map { childName ->
-                        if (childName == "#PCDATA") {
-                            ElementDefinition.ParsedCharacterData(
-                                elementName = childName,
-                                attributes = emptyList()
-                            )
-                        } else {
-                            val element = elements.firstOrNull { it.name == childName }
-                            requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
-                            (buildChildElementDefinition(childName, element, elements, attributes) as ChildElementDefinition.Single).elementDefinition
-                        }
+                        val childName = childName.trim()
+                        val element = elements.firstOrNull { it.name == childName }
+                        requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
+                        buildElementDefinition(element, childName, elements, attributes)
                     }
             )
         }
@@ -164,43 +190,7 @@ internal fun buildChildElementDefinition(
                     children = element.children
                         .map { childName ->
                             val childName = childName.trim()
-                            if (childName.startsWith("(")) {
-                                val occurs = when {
-                                    childName.endsWith("+") -> ChildElementDefinition.Occurs.AtLeastOnce
-                                    childName.endsWith("*") -> ChildElementDefinition.Occurs.ZeroOrMore
-                                    childName.endsWith("?") -> ChildElementDefinition.Occurs.AtMostOnce
-                                    else -> ChildElementDefinition.Occurs.Once
-                                }
-                                val childName = childName
-                                    .removeSuffix("?")
-                                    .removeSuffix("*")
-                                    .removeSuffix("+")
-                                val children = childName.removeSurrounding("(", ")")
-                                    .split("|")
-                                    .map { childName ->
-                                        val element = elements.firstOrNull {
-                                            it.name == childName
-                                                .removeSuffix("?")
-                                                .removeSuffix("*")
-                                                .removeSuffix("+")
-                                        }
-                                        requireNotNull(element) { "Couldn't find an element with the name $childName!" }
-                                        buildChildElementDefinition(childName, element, elements, attributes)
-                                    }
-                                ChildElementDefinition.Either(
-                                    occurs = occurs,
-                                    options = children
-                                )
-                            } else {
-                                val element = elements.firstOrNull {
-                                    it.name == childName
-                                        .removeSuffix("?")
-                                        .removeSuffix("*")
-                                        .removeSuffix("+")
-                                }
-                                requireNotNull(element) { "Couldn't find an element with the name $childName!" }
-                                buildChildElementDefinition(childName, element, elements, attributes)
-                            }
+                            buildChildElementDefinition(childName, elements, attributes)
                         }
                 )
             }
@@ -214,10 +204,6 @@ internal fun buildChildElementDefinition(
             )
         }
     }
-    return ChildElementDefinition.Single(
-        occurs = occurs,
-        elementDefinition = element
-    )
 }
 
 internal fun buildAttribute(attribute: AttributeDto): AttributeDefinition {

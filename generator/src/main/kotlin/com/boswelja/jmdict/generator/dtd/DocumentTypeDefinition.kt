@@ -121,6 +121,16 @@ sealed interface ElementDefinition {
         override val attributes: List<AttributeDefinition>,
         val children: List<ElementDefinition>,
     ) : ElementDefinition
+
+    /**
+     * The element may contain an occurrence of [options], but never multiple options at the same
+     * time.
+     */
+    data class Either(
+        override val elementName: String,
+        override val attributes: List<AttributeDefinition>,
+        val options: List<ChildElementDefinition>
+    ): ElementDefinition
 }
 
 /**
