@@ -35,7 +35,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
         val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/kotlin")
-        val targetJmDictResDir = target.layout.buildDirectory.dir("generated/jmdict/composeResources/files/")
+        val targetJmDictResDir = target.layout.buildDirectory.dir("generated/jmdict/composeResources/")
         val jmDictFile = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
         val relNotesFile = target.layout.buildDirectory.file("resources/jmdict/changelog.xml")
         val dtdFile = target.layout.buildDirectory.file("resources/jmdict/dtd.xml")

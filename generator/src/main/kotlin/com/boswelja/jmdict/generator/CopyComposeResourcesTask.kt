@@ -23,7 +23,7 @@ abstract class CopyComposeResourcesTask : DefaultTask() {
     fun copyJmDictToResources() {
         project.copy(Action { t ->
             t.from(jmDictFile)
-            t.into(outputDirectory)
+            t.into(outputDirectory.dir("files/"))
         })
     }
 }
