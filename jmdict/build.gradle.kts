@@ -18,6 +18,10 @@ kotlin {
             implementation(compose.runtime)
             implementation(libs.kotlinx.serialization.xml)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
 
