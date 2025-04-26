@@ -35,6 +35,8 @@ class DataClassGenerator(
         val parameters = mutableListOf<ParameterSpec>()
         val properties = mutableListOf<PropertySpec>()
 
+        val className = ClassName(packageName, element.elementName.toPascalCase())
+
         generatePropertiesForAttributes(element.attributes).also {
             parameters.addAll(it.parameters)
             properties.addAll(it.properties)
@@ -46,10 +48,12 @@ class DataClassGenerator(
             is ElementDefinition.Mixed -> {
                 element.children.forEach { elementDefinition ->
                     val typeSpec = generateTypeSpecForElement(elementDefinition)
-                    types.addAll(typeSpec.topLevelTypes)
+                    nestedTypes.addAll(typeSpec.topLevelTypes)
+
+                    val nestedTypeSpec = className.nestedClass(typeSpec.rootClassName.simpleName)
 
                     val propertyName = "${typeSpec.rootClassName.simpleName.toCamelCase()}s"
-                    val propertyType = List::class.asClassName().parameterizedBy(typeSpec.rootClassName)
+                    val propertyType = List::class.asClassName().parameterizedBy(nestedTypeSpec)
                     parameters.add(
                         ParameterSpec.builder(propertyName, propertyType)
                             .build()
@@ -82,6 +86,7 @@ class DataClassGenerator(
                     val valueType = TypeSpec.classBuilder(element.elementName.toPascalCase())
                         .primaryConstructor(constructorBuilder)
                         .addModifiers(KModifier.VALUE)
+                        .addAnnotation(JvmInline::class)
                         .addTypes(nestedTypes)
                         .addProperties(properties)
                         .addProperty(
@@ -114,7 +119,7 @@ class DataClassGenerator(
         }
 
         val rootType = if (parameters.isEmpty()) {
-            TypeSpec.objectBuilder(element.elementName.toPascalCase())
+            TypeSpec.objectBuilder(className.simpleName)
                 .addProperties(properties)
                 .addModifiers(KModifier.DATA)
                 .addTypes(nestedTypes)
@@ -123,7 +128,7 @@ class DataClassGenerator(
             val constructorBuilder = FunSpec.constructorBuilder()
                 .addParameters(parameters)
                 .build()
-            TypeSpec.classBuilder(element.elementName.toPascalCase())
+            TypeSpec.classBuilder(className.simpleName)
                 .primaryConstructor(constructorBuilder)
                 .addProperties(properties)
                 .addModifiers(KModifier.DATA)
@@ -133,7 +138,7 @@ class DataClassGenerator(
 
         types.add(rootType)
         return GeneratedTypes(
-            rootClassName = ClassName(packageName, element.elementName.toPascalCase()),
+            rootClassName = className,
             topLevelTypes = types
         )
     }
