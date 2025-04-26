@@ -151,13 +151,14 @@ internal fun buildElementDefinition(
     elements: List<ElementDto>,
     attributes: List<AttributeDto>,
 ): ElementDefinition {
+    val mappedAttrs = attributes
+        .filter { it.elementName == elementName }
+        .map { buildAttribute(it) }
     return when {
         element.isMixed -> {
             ElementDefinition.Mixed(
                 elementName = elementName,
-                attributes = attributes
-                    .filter { it.elementName == elementName }
-                    .map { buildAttribute(it) },
+                attributes = mappedAttrs,
                 children = element.children
                     .map { childName ->
                         val childName = childName.trim()
@@ -179,23 +180,17 @@ internal fun buildElementDefinition(
             if (element.children.size == 1 && element.children.first() == "#PCDATA") {
                 ElementDefinition.ParsedCharacterData(
                     elementName = elementName,
-                    attributes = attributes
-                        .filter { it.elementName == elementName }
-                        .map { buildAttribute(it) }
+                    attributes = mappedAttrs,
                 )
             } else if (element.children.size == 1 && element.children.first() == "ANY") {
                 ElementDefinition.Any(
                     elementName = elementName,
-                    attributes = attributes
-                        .filter { it.elementName == elementName }
-                        .map { buildAttribute(it) }
+                    attributes = mappedAttrs,
                 )
             } else {
                 ElementDefinition.WithChildren(
                     elementName = elementName,
-                    attributes = attributes
-                        .filter { it.elementName == elementName }
-                        .map { buildAttribute(it) },
+                    attributes = mappedAttrs,
                     children = element.children
                         .map { childName ->
                             val childName = childName.trim()
@@ -207,9 +202,7 @@ internal fun buildElementDefinition(
         else -> {
             ElementDefinition.Empty(
                 elementName = elementName,
-                attributes = attributes
-                    .filter { it.elementName == elementName }
-                    .map { buildAttribute(it) }
+                attributes = mappedAttrs,
             )
         }
     }
