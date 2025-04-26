@@ -40,11 +40,12 @@ fun DocumentTypeDefinition.Companion.fromSource(source: Source): DocumentTypeDef
             val children = if (isMixed) {
                 matchResult.groupValues[2]
                     .removeSurrounding("(", ")*")
-                    .split(",")
+                    .split("|")
             } else {
                 matchResult.groupValues[2]
                     .removeSurrounding("(", ")")
                     .split(",")
+                    .map { it.trim() }
             }
             elements.add(ElementDto(name, children, isMixed))
         }
@@ -160,9 +161,17 @@ internal fun buildElementDefinition(
                 children = element.children
                     .map { childName ->
                         val childName = childName.trim()
-                        val element = elements.firstOrNull { it.name == childName }
-                        requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
-                        buildElementDefinition(element, childName, elements, attributes)
+                        when (childName) {
+                            "#PCDATA" -> ElementDefinition.ParsedCharacterData(
+                                "pcData",
+                                emptyList()
+                            )
+                            else -> {
+                                val element = elements.firstOrNull { it.name == childName }
+                                requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
+                                buildElementDefinition(element, childName, elements, attributes)
+                            }
+                        }
                     }
             )
         }
