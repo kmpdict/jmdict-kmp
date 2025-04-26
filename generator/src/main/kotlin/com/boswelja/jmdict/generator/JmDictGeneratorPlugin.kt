@@ -3,6 +3,8 @@ package com.boswelja.jmdict.generator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
@@ -32,25 +34,27 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         )
         config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
-        val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/")
+        val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/kotlin")
+        val targetJmDictResDir = target.layout.buildDirectory.dir("generated/jmdict/composeResources/files/")
         val jmDictFile = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
         val relNotesFile = target.layout.buildDirectory.file("resources/jmdict/changelog.xml")
         val dtdFile = target.layout.buildDirectory.file("resources/jmdict/dtd.xml")
 
+        // Register the download task
+        val downloadJmDictTask = target.tasks.register(
+            "downloadJmDict",
+            DownloadJmDictTask::class.java
+        ) {
+            requireProperty(config::jmDictUrl, "ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
+
+            it.jmDictUrl.set(config.jmDictUrl)
+            it.outputJmDict.set(jmDictFile)
+            it.outputDtd.set(dtdFile)
+            it.outputReleaseNotes.set(relNotesFile)
+        }
+
         // Configure KMP projects
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
-            // Register the download task
-            val downloadJmDictTask = target.tasks.register(
-                "downloadJmDict",
-                DownloadJmDictTask::class.java
-            ) {
-                requireProperty(config::jmDictUrl, "ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
-
-                it.jmDictUrl.set(config.jmDictUrl)
-                it.outputJmDict.set(jmDictFile)
-                it.outputDtd.set(dtdFile)
-                it.outputReleaseNotes.set(relNotesFile)
-            }
 
             // Register the generation tasks
             val generateDataClassTask = target.tasks.register(
@@ -75,6 +79,22 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             sourceSets.commonMain.configure {
                 it.kotlin.srcDir(targetGeneratedSourcesDir)
             }
+        }
+
+        // Configure Compose resources
+        target.extensions.findByType(ComposeExtension::class.java)?.extensions?.findByType(ResourcesExtension::class.java)?.apply {
+            val copyResourcesTask = target.tasks.register(
+                "copyJmDictResource",
+                CopyComposeResourcesTask::class.java
+            ) {
+                it.dependsOn(downloadJmDictTask)
+                it.jmDictFile.set(jmDictFile)
+                it.outputDirectory.set(targetJmDictResDir)
+            }
+            customDirectory(
+                sourceSetName = "commonMain",
+                directoryProvider = copyResourcesTask.map { it.outputDirectory.get() }
+            )
         }
     }
 }
