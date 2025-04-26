@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlin.plugin)
     implementation(libs.compose.plugin)
+    implementation(libs.kotlinx.serialization.xml)
 
     testImplementation(libs.kotlin.test)
 }

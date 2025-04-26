@@ -4,6 +4,7 @@ import com.boswelja.jmdict.generator.dtd.AttributeDefinition
 import com.boswelja.jmdict.generator.dtd.ChildElementDefinition
 import com.boswelja.jmdict.generator.dtd.DocumentTypeDefinition
 import com.boswelja.jmdict.generator.dtd.ElementDefinition
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -15,6 +16,10 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import nl.adaptivity.xmlutil.serialization.XmlElement
+import nl.adaptivity.xmlutil.serialization.XmlValue
 import java.nio.file.Path
 
 class DataClassGenerator(
@@ -61,6 +66,7 @@ class DataClassGenerator(
                     properties.add(
                         PropertySpec.builder(propertyName, propertyType)
                             .addModifiers(KModifier.PUBLIC)
+                            .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", elementDefinition.elementName).build())
                             .initializer(propertyName)
                             .build()
                     )
@@ -87,6 +93,7 @@ class DataClassGenerator(
                         .primaryConstructor(constructorBuilder)
                         .addModifiers(KModifier.VALUE)
                         .addAnnotation(JvmInline::class)
+                        .addAnnotation(Serializable::class)
                         .addTypes(nestedTypes)
                         .addProperties(properties)
                         .addProperty(
@@ -110,6 +117,7 @@ class DataClassGenerator(
                     properties.add(
                         PropertySpec.builder(propertyName, String::class)
                             .addModifiers(KModifier.PUBLIC)
+                            .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", false).build())
                             .initializer(propertyName)
                             .build()
                     )
@@ -122,6 +130,7 @@ class DataClassGenerator(
             TypeSpec.objectBuilder(className.simpleName)
                 .addProperties(properties)
                 .addModifiers(KModifier.DATA)
+                .addAnnotation(Serializable::class)
                 .addTypes(nestedTypes)
                 .build()
         } else {
@@ -131,6 +140,7 @@ class DataClassGenerator(
             TypeSpec.classBuilder(className.simpleName)
                 .primaryConstructor(constructorBuilder)
                 .addProperties(properties)
+                .addAnnotation(Serializable::class)
                 .addModifiers(KModifier.DATA)
                 .addTypes(nestedTypes)
                 .build()
@@ -170,6 +180,12 @@ class DataClassGenerator(
             properties.add(
                 PropertySpec.builder(propertyName, type)
                     .addModifiers(KModifier.PUBLIC)
+                    .addAnnotation(XmlValue::class)
+                    .apply {
+                        if (childElementDefinition is ChildElementDefinition.Single) {
+                            addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", childElementDefinition.elementDefinition.elementName).build())
+                        }
+                    }
                     .initializer(propertyName)
                     .build()
             )
@@ -190,6 +206,7 @@ class DataClassGenerator(
                 val typeName = childTypes.joinToString(separator = "Or") { it.rootClassName.simpleName }
                 val sealedSpec = TypeSpec.interfaceBuilder(typeName)
                     .addModifiers(KModifier.SEALED)
+                    .addAnnotation(Serializable::class)
                     .build()
                 val topLevelTypes = childTypes
                     .map { childType ->
@@ -211,8 +228,14 @@ class DataClassGenerator(
 
     internal fun generateEnumForAttribute(name: String, enumValues: AttributeDefinition.Type.Enum): TypeSpec {
         val enumBuilder = TypeSpec.enumBuilder(name.toPascalCase())
+            .addAnnotation(Serializable::class)
         enumValues.options.forEach {
-            enumBuilder.addEnumConstant(it.toPascalCase())
+            enumBuilder.addEnumConstant(
+                it.toPascalCase(),
+                TypeSpec.anonymousClassBuilder()
+                    .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", it).build())
+                    .build()
+            )
         }
         return enumBuilder.build()
     }
@@ -247,6 +270,8 @@ class DataClassGenerator(
                 properties.add(
                     PropertySpec.builder(propertyName, type)
                         .addModifiers(KModifier.PUBLIC)
+                        .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", false).build())
+                        .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", attribute.attributeName).build())
                         .initializer(attribute.value.value)
                         .build()
                 )
@@ -267,6 +292,8 @@ class DataClassGenerator(
                 properties.add(
                     PropertySpec.builder(propertyName, type)
                         .addModifiers(KModifier.PUBLIC)
+                        .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", false).build())
+                        .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", attribute.attributeName).build())
                         .initializer(propertyName)
                         .build()
                 )

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.kotlin.serialization)
     id("com.boswelja.jmdict.generator")
 }
 
@@ -16,6 +17,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.components.resources)
+            implementation(libs.kotlinx.serialization.xml)
         }
     }
 }
