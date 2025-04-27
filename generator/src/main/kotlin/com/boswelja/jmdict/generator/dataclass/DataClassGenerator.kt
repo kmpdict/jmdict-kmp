@@ -82,46 +82,18 @@ class DataClassGenerator(
             }
             is ElementDefinition.Any,
             is ElementDefinition.ParsedCharacterData -> {
-                if (parameters.isEmpty()) {
-                    // If there's no other parameters for this PCDATA, create a value class instead.
-                    val propertyName = "content"
-                    val constructorBuilder = FunSpec.constructorBuilder()
-                        .addParameter(
-                            ParameterSpec.builder(propertyName, String::class).build()
-                        )
+                val propertyName = "content"
+                parameters.add(
+                    ParameterSpec.builder(propertyName, String::class)
                         .build()
-                    val valueType = TypeSpec.classBuilder(element.elementName.toPascalCase())
-                        .primaryConstructor(constructorBuilder)
-                        .addModifiers(KModifier.VALUE)
-                        .addAnnotation(JvmInline::class)
-                        .addAnnotation(Serializable::class)
-                        .addTypes(nestedTypes)
-                        .addProperties(properties)
-                        .addProperty(
-                            PropertySpec.builder(propertyName, String::class)
-                                .addModifiers(KModifier.PUBLIC)
-                                .initializer(propertyName)
-                                .build()
-                        )
+                )
+                properties.add(
+                    PropertySpec.builder(propertyName, String::class)
+                        .addModifiers(KModifier.PUBLIC)
+                        .addAnnotation(XmlValue::class)
+                        .initializer(propertyName)
                         .build()
-                    types.add(valueType)
-                    return GeneratedTypes(
-                        rootClassName = ClassName(packageName, element.elementName.toPascalCase()),
-                        topLevelTypes = types
-                    )
-                } else {
-                    val propertyName = "content"
-                    parameters.add(
-                        ParameterSpec.builder(propertyName, String::class)
-                            .build()
-                    )
-                    properties.add(
-                        PropertySpec.builder(propertyName, String::class)
-                            .addModifiers(KModifier.PUBLIC)
-                            .initializer(propertyName)
-                            .build()
-                    )
-                }
+                )
             }
             is ElementDefinition.Either -> TODO()
         }
