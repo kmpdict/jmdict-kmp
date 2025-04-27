@@ -66,6 +66,7 @@ class DataClassGenerator(
                     properties.add(
                         PropertySpec.builder(propertyName, propertyType)
                             .addModifiers(KModifier.PUBLIC)
+                            .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", true).build())
                             .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", elementDefinition.elementName).build())
                             .initializer(propertyName)
                             .build()
@@ -117,7 +118,6 @@ class DataClassGenerator(
                     properties.add(
                         PropertySpec.builder(propertyName, String::class)
                             .addModifiers(KModifier.PUBLIC)
-                            .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", false).build())
                             .initializer(propertyName)
                             .build()
                     )
@@ -131,6 +131,8 @@ class DataClassGenerator(
                 .addProperties(properties)
                 .addModifiers(KModifier.DATA)
                 .addAnnotation(Serializable::class)
+                .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", true).build())
+                .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", element.elementName).build())
                 .addTypes(nestedTypes)
                 .build()
         } else {
@@ -141,6 +143,8 @@ class DataClassGenerator(
                 .primaryConstructor(constructorBuilder)
                 .addProperties(properties)
                 .addAnnotation(Serializable::class)
+                .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", true).build())
+                .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", element.elementName).build())
                 .addModifiers(KModifier.DATA)
                 .addTypes(nestedTypes)
                 .build()
@@ -180,7 +184,7 @@ class DataClassGenerator(
             properties.add(
                 PropertySpec.builder(propertyName, type)
                     .addModifiers(KModifier.PUBLIC)
-                    .addAnnotation(XmlValue::class)
+                    .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", true).build())
                     .apply {
                         if (childElementDefinition is ChildElementDefinition.Single) {
                             addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", childElementDefinition.elementDefinition.elementName).build())

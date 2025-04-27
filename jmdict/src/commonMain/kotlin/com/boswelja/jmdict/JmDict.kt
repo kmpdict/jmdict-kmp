@@ -8,9 +8,12 @@ import nl.adaptivity.xmlutil.serialization.XML
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import java.io.ByteArrayInputStream
 
+internal val Serializer = XML {
+}
+
 @OptIn(ExperimentalResourceApi::class, ExperimentalXmlUtilApi::class)
 suspend fun openJmDict(): JMdict {
     val input = ByteArrayInputStream(Res.readBytes("files/jmdict.xml"))
     val bufferedReader = XmlBufferedReader(KtXmlReader(input))
-    return XML.decodeFromReader(bufferedReader)
+    return Serializer.decodeFromReader(bufferedReader)
 }
