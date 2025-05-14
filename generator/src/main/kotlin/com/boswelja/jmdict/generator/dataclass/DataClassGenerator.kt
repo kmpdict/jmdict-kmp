@@ -51,28 +51,7 @@ class DataClassGenerator(
         when (element) {
             is ElementDefinition.Empty -> { /* Nothing to add */ }
             is ElementDefinition.Mixed -> {
-                element.children.forEach { elementDefinition ->
-                    val typeSpec = generateTypeSpecForElement(elementDefinition)
-                    nestedTypes.addAll(typeSpec.topLevelTypes)
-
-                    val nestedTypeSpec = className.nestedClass(typeSpec.rootClassName.simpleName)
-
-                    val propertyName = "${typeSpec.rootClassName.simpleName.toCamelCase()}s"
-                    val propertyType = List::class.asClassName().parameterizedBy(nestedTypeSpec)
-                    parameters.add(
-                        ParameterSpec.builder(propertyName, propertyType)
-                            .build()
-                    )
-                    properties.add(
-                        PropertySpec.builder(propertyName, propertyType)
-                            .addModifiers(KModifier.PUBLIC)
-                            .addAnnotation(AnnotationSpec.builder(XmlElement::class).addMember("value = %L", true).build())
-                            .addAnnotation(AnnotationSpec.builder(SerialName::class).addMember("value = %S", elementDefinition.elementName).build())
-                            .initializer(propertyName)
-                            .build()
-                    )
-                }
-                if (element.containsPcData) {
+                if (element.containsPcData && element.children.isEmpty()) {
                     val propertyName = "content"
                     parameters.add(
                         ParameterSpec.builder(propertyName, List::class.parameterizedBy(String::class))
@@ -83,6 +62,48 @@ class DataClassGenerator(
                             .addModifiers(KModifier.PUBLIC)
                             .addAnnotation(XmlValue::class)
                             .initializer(propertyName)
+                            .build()
+                    )
+                } else {
+                    val sealedType = TypeSpec.interfaceBuilder("Content")
+                        .addModifiers(KModifier.SEALED)
+                        .addAnnotation(Serializable::class)
+                        .build()
+                    val sealedSubtypes = element.children
+                        .map { elementDefinition ->
+                            val typeSpec = generateTypeSpecForElement(elementDefinition)
+                            val rootTypeSpec = typeSpec.topLevelTypes.first { it.name == typeSpec.rootClassName.simpleName }
+                            typeSpec.topLevelTypes
+                                .toMutableList()
+                                .apply {
+                                    remove(rootTypeSpec)
+                                    add(rootTypeSpec.toBuilder().addSuperinterface(ClassName(packageName, className.simpleName, sealedType.name!!)).build())
+                                }
+                        }
+                        .flatten()
+                        .toMutableList()
+                    if (element.containsPcData) {
+                        sealedSubtypes += TypeSpec.classBuilder("PcData")
+                            .addModifiers(KModifier.VALUE)
+                            .addAnnotation(Serializable::class)
+                            .addAnnotation(JvmInline::class)
+                            .addProperty(PropertySpec.builder("content", String::class).addModifiers(KModifier.PUBLIC).initializer("content").build())
+                            .primaryConstructor(FunSpec.constructorBuilder().addParameter("content", String::class).build())
+                            .addSuperinterface(ClassName(packageName, className.simpleName, sealedType.name!!))
+                            .build()
+                    }
+                    nestedTypes.add(sealedType)
+                    nestedTypes.addAll(sealedSubtypes)
+                    val propertyType = List::class.asClassName().parameterizedBy(className.nestedClass(sealedType.name!!))
+                    parameters.add(
+                        ParameterSpec.builder("content", propertyType)
+                            .build()
+                    )
+                    properties.add(
+                        PropertySpec.builder("content", propertyType)
+                            .addModifiers(KModifier.PUBLIC)
+                            .addAnnotation(XmlValue::class)
+                            .initializer("content")
                             .build()
                     )
                 }
