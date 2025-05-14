@@ -119,6 +119,7 @@ sealed interface ElementDefinition {
     data class Mixed(
         override val elementName: String,
         override val attributes: List<AttributeDefinition>,
+        val containsPcData: Boolean,
         val children: List<ElementDefinition>,
     ) : ElementDefinition
 

@@ -321,12 +321,8 @@ class DeserializerE2ETest {
                 rootElement = ElementDefinition.Mixed(
                     elementName = "HOLIDAY",
                     attributes = emptyList(),
-                    children = listOf(
-                        ElementDefinition.ParsedCharacterData(
-                            elementName = "#PCDATA",
-                            attributes = emptyList()
-                        ),
-                    ),
+                    containsPcData = true,
+                    children = emptyList(),
                 ),
                 entities = emptyList()
             )

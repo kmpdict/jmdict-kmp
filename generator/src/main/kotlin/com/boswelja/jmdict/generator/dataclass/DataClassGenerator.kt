@@ -72,6 +72,20 @@ class DataClassGenerator(
                             .build()
                     )
                 }
+                if (element.containsPcData) {
+                    val propertyName = "content"
+                    parameters.add(
+                        ParameterSpec.builder(propertyName, List::class.parameterizedBy(String::class))
+                            .build()
+                    )
+                    properties.add(
+                        PropertySpec.builder(propertyName, List::class.parameterizedBy(String::class))
+                            .addModifiers(KModifier.PUBLIC)
+                            .addAnnotation(XmlValue::class)
+                            .initializer(propertyName)
+                            .build()
+                    )
+                }
             }
             is ElementDefinition.WithChildren -> {
                 generatePropertiesForChildren(element.children).also {

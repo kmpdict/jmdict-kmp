@@ -159,20 +159,14 @@ internal fun buildElementDefinition(
             ElementDefinition.Mixed(
                 elementName = elementName,
                 attributes = mappedAttrs,
+                containsPcData = element.children.any { it.trim() == "#PCDATA" },
                 children = element.children
+                    .filterNot { it.trim() == "#PCDATA" }
                     .map { childName ->
                         val childName = childName.trim()
-                        when (childName) {
-                            "#PCDATA" -> ElementDefinition.ParsedCharacterData(
-                                "pcData",
-                                emptyList()
-                            )
-                            else -> {
-                                val element = elements.firstOrNull { it.name == childName }
-                                requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
-                                buildElementDefinition(element, childName, elements, attributes)
-                            }
-                        }
+                        val element = elements.firstOrNull { it.name == childName }
+                        requireNotNull(element) { "Couldn't find a child with the name $childName in $elements" }
+                        buildElementDefinition(element, childName, elements, attributes)
                     }
             )
         }
