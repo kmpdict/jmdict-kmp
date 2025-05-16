@@ -1,10 +1,10 @@
 package com.boswelja.jmdict.generator
 
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
@@ -35,7 +35,6 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
         val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/kotlin")
-        val targetJmDictResDir = target.layout.buildDirectory.dir("generated/jmdict/composeResources/")
         val jmDictFile = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
         val relNotesFile = target.layout.buildDirectory.file("resources/jmdict/changelog.xml")
         val dtdFile = target.layout.buildDirectory.file("resources/jmdict/dtd.xml")
@@ -79,22 +78,35 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             sourceSets.commonMain.configure {
                 it.kotlin.srcDir(targetGeneratedSourcesDir)
             }
+
+            sourceSets.findByName("jvmMain")?.apply {
+                val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
+                resources.srcDir(targetGeneratedSourcesDir)
+
+                val copyResourcesTask = target.tasks.register(
+                    "copyJvmMainJmDictResource",
+                    CopyJvmResourcesTask::class.java
+                ) {
+                    it.dependsOn(downloadJmDictTask)
+                    it.jmDictFile.set(jmDictFile)
+                    it.outputDirectory.set(targetGeneratedSourcesDir)
+                }
+
+                target.tasks.getByName("processJvmMainResources").dependsOn(copyResourcesTask)
+            }
         }
 
-        // Configure Compose resources
-        target.extensions.findByType(ComposeExtension::class.java)?.extensions?.findByType(ResourcesExtension::class.java)?.apply {
-            val copyResourcesTask = target.tasks.register(
-                "copyJmDictResource",
-                CopyComposeResourcesTask::class.java
-            ) {
-                it.dependsOn(downloadJmDictTask)
-                it.jmDictFile.set(jmDictFile)
-                it.outputDirectory.set(targetJmDictResDir)
+        target.extensions.findByType(AndroidComponentsExtension::class.java)?.apply {
+            onVariants { variant ->
+                val copyResourcesTask = target.tasks.register(
+                    "copy${variant.name.replaceFirstChar { it.uppercase() }}JmDictResource",
+                    CopyAndroidResourcesTask::class.java
+                ) {
+                    it.dependsOn(downloadJmDictTask)
+                    it.jmDictFile.set(jmDictFile)
+                }
+                variant.sources.res?.addGeneratedSourceDirectory(copyResourcesTask, CopyAndroidResourcesTask::outputDirectory)
             }
-            customDirectory(
-                sourceSetName = "commonMain",
-                directoryProvider = copyResourcesTask.map { it.outputDirectory.get() }
-            )
         }
     }
 }

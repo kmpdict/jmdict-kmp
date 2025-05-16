@@ -8,7 +8,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-abstract class CopyComposeResourcesTask : DefaultTask() {
+abstract class CopyAndroidResourcesTask : DefaultTask() {
 
     @get:InputFile
     abstract val jmDictFile: RegularFileProperty
@@ -23,7 +23,7 @@ abstract class CopyComposeResourcesTask : DefaultTask() {
     fun copyJmDictToResources() {
         project.copy(Action { t ->
             t.from(jmDictFile)
-            t.into(outputDirectory.dir("files/"))
+            t.into(outputDirectory.dir("raw/"))
         })
     }
 }
