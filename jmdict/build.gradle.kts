@@ -32,3 +32,7 @@ android {
 jmDict {
     packageName = "com.boswelja.jmdict"
 }
+
+tasks.withType<Test>().configureEach {
+    maxHeapSize = "1G"
+}

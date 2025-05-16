@@ -21,6 +21,6 @@ internal val Serializer = XML {
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalXmlUtilApi::class)
 suspend fun openJmDict(): JMdict {
-    val input = ByteArrayInputStream(Res.readBytes("files/jmdict.xml"))
+    val input = ByteArrayInputStream(Res.readBytes("files/jmdict.xml")).buffered()
     return Serializer.decodeFromReader(KtXmlReader(input))
 }
