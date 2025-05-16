@@ -8,6 +8,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.net.URI
 import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 
 abstract class DownloadJmDictTask : DefaultTask() {
 
@@ -31,7 +32,7 @@ abstract class DownloadJmDictTask : DefaultTask() {
 
     @TaskAction
     fun downloadAndUnpackJmDict() {
-        val jmDictStream = outputJmDict.get().asFile.outputStream().writer()
+        val jmDictStream = GZIPOutputStream(outputJmDict.get().asFile.outputStream()).writer()
         val releaseNotesOutputStream = outputReleaseNotes.get().asFile.outputStream().writer()
         val dtdOutputStream = outputDtd.get().asFile.outputStream().writer()
 

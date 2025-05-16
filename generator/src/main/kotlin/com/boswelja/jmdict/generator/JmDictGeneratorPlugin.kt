@@ -5,6 +5,8 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
@@ -52,6 +54,34 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             it.outputReleaseNotes.set(relNotesFile)
         }
 
+        // Configure JVM projects
+        target.extensions.findByType(KotlinJvmExtension::class.java)?.apply {
+            val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
+            // Register the generation tasks
+            val generateDataClassTask = target.tasks.register(
+                "generateJmDictDataClasses",
+                GenerateDataClassesTask::class.java
+            ) {
+                requireProperty(config::packageName, "\"com.my.package\"")
+
+                it.dependsOn(downloadJmDictTask)
+
+                it.outputDirectory.set(targetGeneratedSourcesDir)
+                it.packageName.set(config.packageName)
+                it.dtdFile.set(downloadJmDictTask.get().outputDtd)
+            }
+
+            // Add generation tasks as dependencies for build task
+            target.tasks.withType(KotlinCompile::class.java).configureEach {
+                it.dependsOn(generateDataClassTask)
+            }
+
+            // Add the generated source dir to the common source set
+            sourceSets.getByName("main").apply {
+                kotlin.srcDir(targetGeneratedSourcesDir)
+            }
+
+        }
         // Configure KMP projects
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
 
