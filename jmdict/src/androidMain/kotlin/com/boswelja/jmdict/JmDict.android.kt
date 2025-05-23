@@ -1,12 +1,22 @@
 package com.boswelja.jmdict
 
 import android.content.Context
-import nl.adaptivity.xmlutil.xmlStreaming
+import kotlinx.serialization.decodeFromString
 import java.util.zip.GZIPInputStream
 
 actual class JmDictReader(private val context: Context) {
-    actual suspend fun openJmDict(): JMdict {
+    actual suspend fun streamJmDict(): Sequence<Entry> {
         val stream = GZIPInputStream(context.resources.openRawResource(R.raw.jmdict))
-        return Serializer.decodeFromReader(xmlStreaming.newReader(stream.bufferedReader()))
+        val reader = stream.bufferedReader()
+        return reader.lineSequence()
+            .dropWhile { !it.contains("<entry>") }
+            .chunkedUntil { it.contains("<entry>") }
+            .mapNotNull { entryLines ->
+                if (entryLines.isNotEmpty()) {
+                    Serializer.decodeFromString(entryLines.joinToString(separator = ""))
+                } else {
+                    null
+                }
+            }
     }
 }

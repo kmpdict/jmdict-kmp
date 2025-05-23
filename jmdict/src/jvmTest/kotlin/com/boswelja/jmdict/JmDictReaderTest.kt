@@ -6,8 +6,8 @@ import kotlin.test.Test
 class JmDictReaderTest {
 
     @Test
-    fun openJmDict() = runTest {
+    fun streamJmDict() = runTest {
         val reader = JmDictReader()
-        reader.openJmDict()
+        reader.streamJmDict()
     }
 }

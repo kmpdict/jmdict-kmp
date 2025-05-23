@@ -7,8 +7,11 @@ import kotlin.test.Test
 class JmDictReaderTest {
 
     @Test
-    fun openJmDict() = runTest {
+    fun streamJmDict() = runTest {
         val reader = JmDictReader(ApplicationProvider.getApplicationContext())
-        reader.openJmDict()
+        var entryCount = 0
+        reader.streamJmDict()
+            .forEach { entryCount++ }
+        println(entryCount)
     }
 }

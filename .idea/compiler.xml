@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="21">
       <module name="generator.jvmMain" target="21" />
       <module name="generator.jvmTest" target="21" />
       <module name="jmdict-kmp.app" target="21" />
@@ -14,6 +14,11 @@
       <module name="jmdict-kmp.generator" target="21" />
       <module name="jmdict-kmp.generator.jvmMain" target="21" />
       <module name="jmdict-kmp.generator.jvmTest" target="21" />
+      <module name="jmdict-kmp.repacker" target="21" />
+      <module name="jmdict-kmp.repacker.jvmMain" target="21" />
+      <module name="jmdict-kmp.repacker.jvmTest" target="21" />
+      <module name="jmdict-kmp.repacker.main" target="21" />
+      <module name="jmdict-kmp.repacker.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

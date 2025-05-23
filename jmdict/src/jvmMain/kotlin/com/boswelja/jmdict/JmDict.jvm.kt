@@ -1,11 +1,18 @@
 package com.boswelja.jmdict
 
-import nl.adaptivity.xmlutil.xmlStreaming
+import kotlinx.serialization.decodeFromString
 import java.util.zip.GZIPInputStream
 
 actual class JmDictReader {
-    actual suspend fun openJmDict(): JMdict {
-        val stream = GZIPInputStream(object{}::class.java.getResourceAsStream("jmdict.xml"))
-        return Serializer.decodeFromReader(xmlStreaming.newReader(stream.bufferedReader()))
+    actual suspend fun streamJmDict(): Sequence<Entry> {
+        val reader = GZIPInputStream(object{}::class.java.getResourceAsStream("jmdict.xml")).bufferedReader()
+        return reader.useLines { linesSequence ->
+            linesSequence
+                .dropWhile { !it.contains("<entry>") }
+                .chunkedUntil { it.contains("<entry>") }
+                .map { entryLines ->
+                    Serializer.decodeFromString(entryLines.joinToString(separator = ""))
+                }
+        }
     }
 }
