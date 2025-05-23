@@ -2,12 +2,17 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlinx.benchmark)
     id("com.boswelja.jmdict.generator")
 }
 
 kotlin {
     jvmToolchain(21)
-    jvm()
+    jvm {
+        compilations.create("benchmark") {
+            associateWith(this@jvm.compilations.getByName("main"))
+        }
+    }
     androidTarget()
 
     sourceSets {
@@ -17,6 +22,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+        }
+        getByName("jvmBenchmark").dependencies {
+            implementation(libs.kotlinx.benchmark.runtime)
         }
         androidInstrumentedTest.dependencies {
             implementation(libs.kotlin.test)
@@ -37,4 +45,10 @@ android {
 
 jmDict {
     packageName = "com.boswelja.jmdict"
+}
+
+benchmark {
+    targets {
+        register("jvmBenchmark")
+    }
 }

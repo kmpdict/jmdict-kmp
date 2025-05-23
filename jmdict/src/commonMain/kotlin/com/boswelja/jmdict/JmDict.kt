@@ -1,5 +1,6 @@
 package com.boswelja.jmdict
 
+import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.serialization.XML
 
 internal val Serializer = XML {
@@ -31,4 +32,13 @@ internal fun <T> Sequence<T>.chunkedUntil(predicate: (T) -> Boolean): Sequence<L
             }
         }
     }
+}
+
+internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {
+    return this
+        .dropWhile { !it.contains("<entry>") }
+        .chunkedUntil { it.contains("<entry>") }
+        .map { entryLines ->
+            Serializer.decodeFromString(entryLines.joinToString(separator = ""))
+        }
 }
