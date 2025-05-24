@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     id("com.boswelja.jmdict.generator")
+    id("com.boswelja.publish")
 }
 
 kotlin {
@@ -51,4 +52,10 @@ benchmark {
     targets {
         register("jvmBenchmark")
     }
+}
+
+publish {
+    description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
+    repositoryUrl = "https://github.com/boswelja/jmdict-kmp"
+    license = "MIT"
 }
