@@ -8,15 +8,6 @@ plugins {
 
 val detektMerge by tasks.registering(io.gitlab.arturbosch.detekt.report.ReportMergeTask::class) {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.sarif"))
-}
-
-// TODO this is not good, it increases configuration time
-subprojects {
-    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-        finalizedBy(detektMerge)
-    }
-
-    detektMerge {
-        input.from(tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().map { it.sarifReportFile })
-    }
+    val reportTree = fileTree(baseDir = rootDir).include("**/detekt/main.sarif")
+    input.from(reportTree)
 }
