@@ -1,0 +1,71 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Build
+        run: ./gradlew build --scan
+
+  publish-github:
+    runs-on: macos-latest
+    environment: github
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        run: ./gradlew publishAllPublicationsToGithubRepository --scan -Dorg.gradle.parallel=false
+        env:
+          ORG_GRADLE_PROJECT_githubUsername: boswelja
+          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+
+  publish-oss:
+    runs-on: macos-latest
+    environment: mavencentral
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        run: ./gradlew publishAllPublicationsToCentralRepository --scan -Dorg.gradle.parallel=false
+        env:
+          PUBLISHING: true
+          ORG_GRADLE_PROJECT_centralUsername: boswelja
+          ORG_GRADLE_PROJECT_centralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
