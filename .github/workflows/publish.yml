@@ -16,6 +16,8 @@ jobs:
           distribution: temurin
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Build
         run: ./gradlew build --scan
 
@@ -36,6 +38,9 @@ jobs:
           distribution: temurin
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: true
       - name: Build
         run: ./gradlew publishAllPublicationsToGithubRepository --scan -Dorg.gradle.parallel=false
         env:
@@ -61,6 +66,9 @@ jobs:
           distribution: temurin
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: true
       - name: Build
         run: ./gradlew publishAllPublicationsToCentralRepository --scan -Dorg.gradle.parallel=false
         env:
