@@ -38,7 +38,9 @@ internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {
     return this
         .dropWhile { !it.contains("<entry>") }
         .chunkedUntil { it.contains("<entry>") }
-        .map { entryLines ->
-            Serializer.decodeFromString(entryLines.joinToString(separator = ""))
+        .mapNotNull { entryLines ->
+            if (entryLines.isNotEmpty()) {
+                Serializer.decodeFromString(entryLines.joinToString(separator = ""))
+            } else null
         }
 }

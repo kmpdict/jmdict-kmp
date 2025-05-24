@@ -1,6 +1,7 @@
 package com.boswelja.jmdict.generator
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.gradle.internal.crash.afterEvaluate
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -109,20 +110,26 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 it.kotlin.srcDir(targetGeneratedSourcesDir)
             }
 
-            sourceSets.findByName("jvmMain")?.apply {
-                val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
-                resources.srcDir(targetGeneratedSourcesDir)
+            if (sourceSets.jvmMain.isPresent) {
+                sourceSets.jvmMain.configure {
+                    val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
+                    it.resources.srcDir(targetGeneratedSourcesDir)
 
-                val copyResourcesTask = target.tasks.register(
-                    "copyJvmMainJmDictResource",
-                    CopyJvmResourcesTask::class.java
-                ) {
-                    it.dependsOn(downloadJmDictTask)
-                    it.jmDictFile.set(jmDictFile)
-                    it.outputDirectory.set(targetGeneratedSourcesDir)
+                    val copyResourcesTask = target.tasks.register(
+                        "copyJvmMainJmDictResource",
+                        CopyJvmResourcesTask::class.java
+                    ) {
+                        it.dependsOn(downloadJmDictTask)
+                        it.jmDictFile.set(jmDictFile)
+                        it.outputDirectory.set(targetGeneratedSourcesDir)
+                    }
+
+                    afterEvaluate {
+                        target.tasks.getByName("processJvmMainResources").dependsOn(copyResourcesTask)
+                    }
                 }
-
-                target.tasks.getByName("processJvmMainResources").dependsOn(copyResourcesTask)
+            } else {
+                println("No jvm target")
             }
         }
 
