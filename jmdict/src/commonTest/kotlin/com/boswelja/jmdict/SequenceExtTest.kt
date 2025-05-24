@@ -32,4 +32,30 @@ class SequenceExtTest {
             chunkedUntil.first()
         )
     }
+
+    @Test
+    fun `chunkedUntil with one match`() {
+        val targetSequence = sequenceOf(
+            "Hello,",
+            "World!",
+            "I'm",
+            "a",
+            "sequence!"
+        )
+        val chunkedUntil = targetSequence.chunkedUntil { it == "I'm" }
+        assertEquals(
+            listOf(
+                listOf(
+                    "Hello,",
+                    "World!",
+                ),
+                listOf(
+                    "I'm",
+                    "a",
+                    "sequence!"
+                )
+            ),
+            chunkedUntil.toList()
+        )
+    }
 }
