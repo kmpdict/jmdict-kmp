@@ -1,6 +1,6 @@
 workflows:
-  - .github/**/*.yml
+  - '.github/**/*.yml'
 documentation:
   - '**/*.md'
 dependencies:
-  - gradle/libs.versions.toml
+  - 'gradle/libs.versions.toml'
