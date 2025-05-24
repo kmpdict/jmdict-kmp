@@ -31,7 +31,7 @@ jobs:
 
       - name: Run Detekt
         continue-on-error: true
-        run: ./gradlew detektDebug detektMetadataMain detektMerge --continue
+        run: ./gradlew detektMetadataMain detektMerge --continue
 
       - name: Submit Detekt report
         uses: github/codeql-action/upload-sarif@v3
