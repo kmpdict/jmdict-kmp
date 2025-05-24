@@ -31,7 +31,10 @@ jobs:
 
       - name: Run Detekt
         continue-on-error: true
-        run: ./gradlew generator:detektMain detektMetadataMain detektMerge --continue
+        run: ./gradlew generator:detektMain detektMetadataMain --continue
+
+      - name: Merge Detekt reports
+        run: ./gradlew detektMerge
 
       - name: Submit Detekt report
         uses: github/codeql-action/upload-sarif@v3
