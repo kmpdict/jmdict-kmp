@@ -1,6 +1,7 @@
 plugins {
     id("java-gradle-plugin")
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.detekt)
 }
 
 gradlePlugin {
@@ -24,4 +25,10 @@ dependencies {
     implementation(libs.android.plugin.library)
 
     testImplementation(libs.kotlin.test)
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/config/detekt.yml")
+    basePath = rootDir.absolutePath
 }
