@@ -29,6 +29,6 @@ dependencies {
 
 detekt {
     buildUponDefaultConfig = true
-    config.setFrom("$rootDir/config/detekt.yml")
+    config.setFrom("${rootDir.parent}/config/detekt.yml")
     basePath = rootDir.absolutePath
 }
