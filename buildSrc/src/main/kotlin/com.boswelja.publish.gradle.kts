@@ -31,7 +31,7 @@ afterEvaluate {
             val githubUsername = findProperty("githubUsername")?.toString()
             val githubToken = findProperty("githubToken")?.toString()
             if (githubUsername != null && githubToken != null) {
-                maven("https://maven.pkg.github.com/boswelja/kotlin-datatypes") {
+                maven("https://maven.pkg.github.com/boswelja/jmdict-kmp") {
                     name = "github"
                     credentials {
                         username = githubUsername
@@ -39,11 +39,11 @@ afterEvaluate {
                     }
                 }
             }
-            val ossrhUsername = findProperty("ossrhUsername")?.toString()
-            val ossrhPassword = findProperty("ossrhPassword")?.toString()
+            val ossrhUsername = findProperty("centralUsername")?.toString()
+            val ossrhPassword = findProperty("centralPassword")?.toString()
             if (ossrhUsername != null && ossrhPassword != null) {
-                maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    name = "oss"
+                maven("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/") {
+                    name = "central"
                     credentials {
                         username = ossrhUsername
                         password = ossrhPassword
