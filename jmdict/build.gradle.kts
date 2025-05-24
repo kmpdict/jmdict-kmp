@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
+    alias(libs.plugins.detekt)
     id("com.boswelja.jmdict.generator")
     id("com.boswelja.publish")
 }
@@ -42,6 +43,12 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/config/detekt.yml")
+    basePath = rootDir.absolutePath
 }
 
 jmDict {
