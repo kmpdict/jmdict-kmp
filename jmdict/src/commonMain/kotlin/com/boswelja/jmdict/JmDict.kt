@@ -1,8 +1,12 @@
 package com.boswelja.jmdict
 
+import io.github.boswelja.jmdict.jmdict.generated.resources.Res
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
 import nl.adaptivity.xmlutil.serialization.XML
+import java.util.zip.GZIPInputStream
 
 @OptIn(ExperimentalXmlUtilApi::class)
 internal val Serializer = XML {
@@ -17,8 +21,13 @@ internal val Serializer = XML {
     }
 }
 
-expect class JmDictReader {
-    suspend fun streamJmDict(): Sequence<Entry>
+suspend fun streamJmDict(): Sequence<Entry> {
+    val compressedBytes = withContext(Dispatchers.IO) {
+        Res.readBytes("files/jmdict.xml")
+    }
+    return GZIPInputStream(compressedBytes.inputStream()).bufferedReader()
+        .lineSequence()
+        .asEntrySequence()
 }
 
 internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {

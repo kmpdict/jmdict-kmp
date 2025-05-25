@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.kotlin.plugin)
     implementation(libs.kotlinx.serialization.xml)
     implementation(libs.android.libraryGradlePlugin)
+    implementation(libs.compose.gradlePlugin)
 
     testImplementation(libs.kotlin.test)
 }
