@@ -52,6 +52,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.runtime)
             implementation(libs.kotlinx.serialization.xml)
+            implementation(libs.kotlinx.io.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
