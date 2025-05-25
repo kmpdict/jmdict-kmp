@@ -73,5 +73,9 @@ publish {
 }
 
 afterEvaluate {
-    tasks.getByName("androidSourcesJar", org.gradle.jvm.tasks.Jar::class).dependsOn("generateJmDictDataClasses")
+    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
+        if (archiveClassifier.get() == "sources") {
+            dependsOn("generateJmDictDataClasses")
+        }
+    }
 }
