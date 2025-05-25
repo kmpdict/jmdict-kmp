@@ -43,7 +43,7 @@ jobs:
           cache-read-only: true
       - name: Calculate calver version
         id: date
-        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
       - name: Build
         run: ./gradlew publishAllPublicationsToGithubRepository -Dversion=${{ steps.date.outputs.date }}-dev
         env:
@@ -74,7 +74,7 @@ jobs:
           cache-read-only: true
       - name: Calculate calver version
         id: date
-        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
       - name: Build
         run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-configuration-cache -Dversion=${{ steps.date.outputs.date }}-dev
         env:
