@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     alias(libs.plugins.detekt)
-    id("com.boswelja.publish")
     id("com.boswelja.jmdict.generator")
+    id("com.boswelja.publish")
 }
 
 kotlin {
@@ -73,14 +73,9 @@ publish {
 }
 
 afterEvaluate {
-    tasks.withType(Jar::class) {
+    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
         if (archiveClassifier.get() == "sources") {
             dependsOn("generateJmDictDataClasses")
-            val generatedSourcePath = "generated/jmdict/kotlin"
-
-            from(generatedSourcePath) {
-                into("main/")
-            }
         }
     }
 }

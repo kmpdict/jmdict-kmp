@@ -92,8 +92,8 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             }
 
             // Add generation task as a dependency for source jar tasks
-            target.tasks.withType(Jar::class.java).configureEach {
-                if (it.archiveClassifier.get() == "source") {
+            target.tasks.withType(org.gradle.jvm.tasks.Jar::class.java).configureEach {
+                if (it.archiveClassifier.get() == "sources") {
                     it.dependsOn(generateDataClassTask)
                 }
             }
