@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -12,11 +14,15 @@ plugins {
 
 kotlin {
     jvmToolchain(21)
+
+    // JVM targets
     jvm {
         compilations.create("benchmark") {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
+
+    // Android target
     androidLibrary {
         namespace = "com.boswelja.jmdict"
         compileSdk = 36
@@ -25,6 +31,20 @@ kotlin {
         withDeviceTest {}
 
         experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+    }
+
+    // Apple targets
+    iosArm64()
+    iosSimulatorArm64()
+    iosX64()
+    macosX64()
+    macosArm64()
+
+    // Web targets
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        nodejs()
     }
 
     sourceSets {
