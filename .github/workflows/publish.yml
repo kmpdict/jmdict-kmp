@@ -42,12 +42,12 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           cache-read-only: true
       - name: Build
-        run: ./gradlew publishAllPublicationsToGithubRepository --scan -Dorg.gradle.parallel=false
+        run: ./gradlew publishAllPublicationsToGithubRepository
         env:
           ORG_GRADLE_PROJECT_githubUsername: boswelja
-          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.GITHUB_TOKEN }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
 
   publish-oss:
     runs-on: macos-latest
@@ -55,7 +55,6 @@ jobs:
     needs: build
     permissions:
       contents: read
-      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,7 +72,7 @@ jobs:
         run: ./gradlew publishAllPublicationsToCentralRepository --scan -Dorg.gradle.parallel=false
         env:
           PUBLISHING: true
-          ORG_GRADLE_PROJECT_centralUsername: boswelja
-          ORG_GRADLE_PROJECT_centralPassword: ${{ secrets.OSSRH_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}

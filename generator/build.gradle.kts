@@ -22,7 +22,7 @@ dependencies {
     implementation(libs.kotlinx.io.core)
     implementation(libs.kotlin.plugin)
     implementation(libs.kotlinx.serialization.xml)
-    implementation(libs.android.plugin.library)
+    implementation(libs.android.libraryGradlePlugin)
 
     testImplementation(libs.kotlin.test)
 }
