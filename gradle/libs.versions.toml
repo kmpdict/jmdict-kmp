@@ -15,16 +15,18 @@ kotlinx-serialization-xml = { module = "io.github.pdvrieze.xmlutil:serialization
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 square-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
-android-plugin-library = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
 
 androidx-test-core = { module = "androidx.test:core", version = "1.6.1" }
 androidx-test-runner = { module = "androidx.test:runner", version = "1.6.2" }
 
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "benchmark" }
 
+android-libraryGradlePlugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
+kotlin-multiplatformGradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+
 [plugins]
-android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-library = { id = "com.android.library" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "benchmark" }

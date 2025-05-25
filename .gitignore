@@ -16,6 +16,7 @@
 /.idea/kotlinc.xml
 /.idea/migrations.xml
 /.idea/misc.xml
+/.idea/artifacts/
 .DS_Store
 /build
 /captures
