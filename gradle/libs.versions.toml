@@ -27,7 +27,7 @@ kotlin-multiplatformGradlePlugin = { module = "org.jetbrains.kotlin.multiplatfor
 compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 
 [plugins]
-android-library = { id = "com.android.library" }
+android-library = { id = "com.android.kotlin.multiplatform.library" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

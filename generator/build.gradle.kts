@@ -18,12 +18,12 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.kotlin.plugin)
+    implementation(libs.compose.gradlePlugin)
+
     implementation(libs.square.kotlinpoet)
     implementation(libs.kotlinx.io.core)
-    implementation(libs.kotlin.plugin)
     implementation(libs.kotlinx.serialization.xml)
-    implementation(libs.android.libraryGradlePlugin)
-    implementation(libs.compose.gradlePlugin)
 
     testImplementation(libs.kotlin.test)
 }

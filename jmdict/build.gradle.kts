@@ -17,7 +17,15 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
-    androidTarget()
+    androidLibrary {
+        namespace = "com.boswelja.jmdict"
+        compileSdk = 36
+        minSdk = 23
+
+        withDeviceTest {}
+
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -32,20 +40,13 @@ kotlin {
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
         }
-        androidInstrumentedTest.dependencies {
+        getByName("androidDeviceTest").dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
 
             implementation(libs.androidx.test.core)
             implementation(libs.androidx.test.runner)
         }
-    }
-}
-
-android {
-    namespace = "com.boswelja.jmdict"
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
