@@ -1,13 +1,11 @@
 package com.boswelja.jmdict.generator
 
-import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.internal.crash.afterEvaluate
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.gradle.jvm.tasks.Jar
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
@@ -38,6 +36,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
         val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/kotlin")
+        val targetJmDictResDir = target.layout.buildDirectory.dir("generated/jmdict/composeResources/")
         val jmDictFile = target.layout.buildDirectory.file("resources/jmdict/jmdict.xml")
         val relNotesFile = target.layout.buildDirectory.file("resources/jmdict/changelog.xml")
         val dtdFile = target.layout.buildDirectory.file("resources/jmdict/dtd.xml")
@@ -69,81 +68,39 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             it.dtdFile.set(downloadJmDictTask.get().outputDtd)
         }
 
-        // Configure JVM projects
-        target.extensions.findByType(KotlinJvmExtension::class.java)?.apply {
-            val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
-            // Register the generation tasks
-            val generateDataClassTask = target.tasks.register(
-                "generateJmDictDataClasses",
-                GenerateDataClassesTask::class.java
+        // Configure Compose resources
+        target.extensions.findByType(ComposeExtension::class.java)?.extensions?.findByType(ResourcesExtension::class.java)?.apply {
+            val copyResourcesTask = target.tasks.register(
+                "copyJmDictResource",
+                CopyComposeResourcesTask::class.java
             ) {
-                requireProperty(config::packageName, "\"com.my.package\"")
-
                 it.dependsOn(downloadJmDictTask)
-
-                it.outputDirectory.set(targetGeneratedSourcesDir)
-                it.packageName.set(config.packageName)
-                it.dtdFile.set(downloadJmDictTask.get().outputDtd)
+                it.jmDictFile.set(jmDictFile)
+                it.outputDirectory.set(targetJmDictResDir)
             }
-
-            // Add generation tasks as dependencies for build task
-            target.tasks.withType(KotlinCompile::class.java).configureEach {
-                it.dependsOn(generateDataClassTask)
-            }
-
-            // Add the generated source dir to the common source set
-            sourceSets.getByName("main").apply {
-                kotlin.srcDir(targetGeneratedSourcesDir)
-            }
-
+            customDirectory(
+                sourceSetName = "commonMain",
+                directoryProvider = copyResourcesTask.map { it.outputDirectory.get() }
+            )
         }
+
         // Configure KMP projects
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
-
-            // Add generation tasks as dependencies for build task
+            // Add generation task as a dependency for build tasks
             target.tasks.withType(KotlinCompile::class.java).configureEach {
                 it.dependsOn(generateDataClassTask)
+            }
+
+            // Add generation task as a dependency for source jar tasks
+            target.tasks.withType(Jar::class.java).configureEach {
+                if (it.archiveClassifier.get() == "source") {
+                    it.dependsOn(generateDataClassTask)
+                }
             }
 
             // Add the generated source dir to the common source set
             sourceSets.commonMain.configure {
                 it.kotlin.srcDir(targetGeneratedSourcesDir)
-            }
-
-            if (sourceSets.jvmMain.isPresent) {
-                sourceSets.jvmMain.configure {
-                    val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
-                    it.resources.srcDir(targetGeneratedSourcesDir)
-
-                    val copyResourcesTask = target.tasks.register(
-                        "copyJvmMainJmDictResource",
-                        CopyJvmResourcesTask::class.java
-                    ) {
-                        it.dependsOn(downloadJmDictTask)
-                        it.jmDictFile.set(jmDictFile)
-                        it.outputDirectory.set(targetGeneratedSourcesDir)
-                    }
-
-                    afterEvaluate {
-                        target.tasks.getByName("processJvmMainResources").dependsOn(copyResourcesTask)
-                    }
-                }
-            } else {
-                println("No jvm target")
-            }
-        }
-
-        // Configure Android projects
-        target.extensions.findByType(AndroidComponentsExtension::class.java)?.apply {
-            onVariants { variant ->
-                val copyResourcesTask = target.tasks.register(
-                    "copy${variant.name.replaceFirstChar { it.uppercase() }}JmDictResource",
-                    CopyAndroidResourcesTask::class.java
-                ) {
-                    it.dependsOn(downloadJmDictTask)
-                    it.jmDictFile.set(jmDictFile)
-                }
-                variant.sources.res?.addGeneratedSourceDirectory(copyResourcesTask, CopyAndroidResourcesTask::outputDirectory)
             }
         }
     }
