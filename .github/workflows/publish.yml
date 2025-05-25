@@ -55,6 +55,7 @@ jobs:
   publish-oss:
     runs-on: macos-latest
     environment: mavencentral
+    if: false # Don't publish to oss right now
     needs: build
     permissions:
       contents: read
