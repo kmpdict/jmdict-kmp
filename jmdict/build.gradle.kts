@@ -66,3 +66,16 @@ publish {
     repositoryUrl = "https://github.com/boswelja/jmdict-kmp"
     license = "MIT"
 }
+
+afterEvaluate {
+    tasks.withType(Jar::class) {
+        if (archiveClassifier.get() == "sources") {
+            dependsOn("generateJmDictDataClasses")
+            val generatedSourcePath = "generated/jmdict/kotlin"
+
+            from(generatedSourcePath) {
+                into("main/")
+            }
+        }
+    }
+}

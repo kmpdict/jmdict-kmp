@@ -144,7 +144,6 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                     it.jmDictFile.set(jmDictFile)
                 }
                 variant.sources.res?.addGeneratedSourceDirectory(copyResourcesTask, CopyAndroidResourcesTask::outputDirectory)
-                variant.sources.kotlin?.addGeneratedSourceDirectory(generateDataClassTask, GenerateDataClassesTask::outputDirectory)
             }
         }
     }
