@@ -91,10 +91,12 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 it.dependsOn(generateDataClassTask)
             }
 
-            // Add generation task as a dependency for source jar tasks
-            target.tasks.withType(Jar::class.java).configureEach {
-                if (it.archiveClassifier.get() == "source") {
-                    it.dependsOn(generateDataClassTask)
+            target.afterEvaluate {
+                // Add generation task as a dependency for source jar tasks
+                target.tasks.withType(Jar::class.java).configureEach {
+                    if (it.archiveClassifier.get() == "source") {
+                        it.dependsOn(generateDataClassTask)
+                    }
                 }
             }
 

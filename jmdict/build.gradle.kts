@@ -13,8 +13,6 @@ plugins {
 kotlin {
     jvmToolchain(21)
     jvm {
-        withSourcesJar(publish = true)
-
         compilations.create("benchmark") {
             associateWith(this@jvm.compilations.getByName("main"))
         }
@@ -23,8 +21,6 @@ kotlin {
         namespace = "com.boswelja.jmdict"
         compileSdk = 36
         minSdk = 23
-
-        withSourcesJar(publish = true)
 
         withDeviceTest {}
 
