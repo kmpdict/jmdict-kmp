@@ -71,11 +71,3 @@ publish {
     repositoryUrl = "https://github.com/boswelja/jmdict-kmp"
     license = "MIT"
 }
-
-afterEvaluate {
-    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
-        if (archiveClassifier.get() == "sources") {
-            dependsOn("generateJmDictDataClasses")
-        }
-    }
-}
