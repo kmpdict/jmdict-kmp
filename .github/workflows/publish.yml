@@ -41,8 +41,11 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           cache-read-only: true
+      - name: Calculate calver version
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
       - name: Build
-        run: ./gradlew publishAllPublicationsToGithubRepository
+        run: ./gradlew publishAllPublicationsToGithubRepository -Dversion=${{ steps.date.outputs.date }}-dev
         env:
           ORG_GRADLE_PROJECT_githubUsername: boswelja
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
@@ -68,8 +71,11 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           cache-read-only: true
+      - name: Calculate calver version
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
       - name: Build
-        run: ./gradlew publishAllPublicationsToCentralRepository --scan -Dorg.gradle.parallel=false
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-configuration-cache -Dversion=${{ steps.date.outputs.date }}-dev
         env:
           PUBLISHING: true
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
