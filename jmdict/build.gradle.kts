@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     alias(libs.plugins.detekt)
-    id("com.boswelja.jmdict.generator")
     id("com.boswelja.publish")
+    id("com.boswelja.jmdict.generator")
 }
 
 kotlin {
