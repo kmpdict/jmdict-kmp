@@ -55,6 +55,20 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             it.outputReleaseNotes.set(relNotesFile)
         }
 
+        // Register the generation tasks
+        val generateDataClassTask = target.tasks.register(
+            "generateJmDictDataClasses",
+            GenerateDataClassesTask::class.java
+        ) {
+            requireProperty(config::packageName, "\"com.my.package\"")
+
+            it.dependsOn(downloadJmDictTask)
+
+            it.outputDirectory.set(targetGeneratedSourcesDir)
+            it.packageName.set(config.packageName)
+            it.dtdFile.set(downloadJmDictTask.get().outputDtd)
+        }
+
         // Configure JVM projects
         target.extensions.findByType(KotlinJvmExtension::class.java)?.apply {
             val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmdict/jvmMain/resources/")
@@ -85,20 +99,6 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         }
         // Configure KMP projects
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
-
-            // Register the generation tasks
-            val generateDataClassTask = target.tasks.register(
-                "generateJmDictDataClasses",
-                GenerateDataClassesTask::class.java
-            ) {
-                requireProperty(config::packageName, "\"com.my.package\"")
-
-                it.dependsOn(downloadJmDictTask)
-
-                it.outputDirectory.set(targetGeneratedSourcesDir)
-                it.packageName.set(config.packageName)
-                it.dtdFile.set(downloadJmDictTask.get().outputDtd)
-            }
 
             // Add generation tasks as dependencies for build task
             target.tasks.withType(KotlinCompile::class.java).configureEach {
@@ -133,6 +133,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             }
         }
 
+        // Configure Android projects
         target.extensions.findByType(AndroidComponentsExtension::class.java)?.apply {
             onVariants { variant ->
                 val copyResourcesTask = target.tasks.register(
@@ -143,6 +144,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                     it.jmDictFile.set(jmDictFile)
                 }
                 variant.sources.res?.addGeneratedSourceDirectory(copyResourcesTask, CopyAndroidResourcesTask::outputDirectory)
+                variant.sources.kotlin?.addGeneratedSourceDirectory(generateDataClassTask, GenerateDataClassesTask::outputDirectory)
             }
         }
     }
