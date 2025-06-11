@@ -8,6 +8,38 @@ import kotlin.test.assertEquals
 class DeserializerE2ETest {
 
     @Test
+    fun `when dtd attlist children have colons, then deserialize succeeds`() {
+        val dtd = """
+            <!DOCTYPE NAME [
+            <!ELEMENT NAME (#PCDATA)>
+            <!ATTLIST NAME xml:lang CDATA "eng">
+            ]>
+        """.trimIndent()
+        val expected = DocumentTypeDefinition(
+            rootElement = ElementDefinition.ParsedCharacterData(
+                elementName = "NAME",
+                attributes = listOf(
+                    AttributeDefinition(
+                        attributeName = "xml:lang",
+                        attributeType = AttributeDefinition.Type.CharacterData,
+                        value = AttributeDefinition.Value.Default("eng")
+                    )
+                )
+            ),
+            entities = emptyList(),
+        )
+
+        val source = Buffer()
+        source.writeString(dtd)
+        val result = DocumentTypeDefinition.fromSource(source)
+        source.close()
+
+        assertEquals(
+            expected,
+            result
+        )
+    }
+    @Test
     fun `when dtd element children contains spaces, then deserialize succeeds`() {
         // Note the space between DATE and NAME in HOLIDAY
         val dtd = """
