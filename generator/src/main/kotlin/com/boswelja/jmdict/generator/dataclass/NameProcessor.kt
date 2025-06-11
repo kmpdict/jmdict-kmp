@@ -17,3 +17,11 @@ fun String.toPascalCase(): String {
 fun String.toCamelCase(): String {
     return this.toPascalCase().replaceFirstChar { it.lowercaseChar() }
 }
+
+fun String.stripPrefix(separator: String = ":"): String {
+    return if (this.contains(separator)) {
+        this.split(separator)[1]
+    } else {
+        this
+    }
+}

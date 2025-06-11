@@ -256,7 +256,7 @@ class DataClassGenerator(
         val properties = mutableListOf<PropertySpec>()
         val parameters = mutableListOf<ParameterSpec>()
         attributes.forEach { attribute ->
-            val propertyName = attribute.attributeName.toCamelCase()
+            val propertyName = attribute.attributeName.stripPrefix().toCamelCase()
             var type: TypeName = when (attribute.attributeType) {
                 AttributeDefinition.Type.Entity,
                 AttributeDefinition.Type.IdRef,
@@ -269,7 +269,7 @@ class DataClassGenerator(
                 AttributeDefinition.Type.NmTokens,
                 AttributeDefinition.Type.Xml -> List::class.parameterizedBy(String::class)
                 is AttributeDefinition.Type.Enum -> {
-                    val enumType = generateEnumForAttribute(attribute.attributeName, attribute.attributeType)
+                    val enumType = generateEnumForAttribute(attribute.attributeName.stripPrefix(), attribute.attributeType)
                     types.add(enumType)
                     ClassName(packageName, enumType.name!!)
                 }
@@ -290,7 +290,7 @@ class DataClassGenerator(
                 if (attribute.value is AttributeDefinition.Value.Default) {
                     parameters.add(
                         ParameterSpec.builder(propertyName, type)
-                            .defaultValue(attribute.value.value)
+                            .defaultValue("\"${attribute.value.value}\"")
                             .build()
                     )
                 } else {
