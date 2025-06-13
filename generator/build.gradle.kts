@@ -21,9 +21,8 @@ dependencies {
     implementation(libs.kotlin.plugin)
     implementation(libs.compose.gradlePlugin)
 
-    implementation(libs.square.kotlinpoet)
+    implementation(libs.boswelja.xmldtd)
     implementation(libs.kotlinx.io.core)
-    implementation(libs.kotlinx.serialization.xml)
 
     testImplementation(libs.kotlin.test)
 }
