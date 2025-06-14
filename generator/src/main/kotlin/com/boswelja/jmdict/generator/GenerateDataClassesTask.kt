@@ -1,8 +1,8 @@
 package com.boswelja.jmdict.generator
 
-import com.boswelja.jmdict.generator.dataclass.DataClassGenerator
-import com.boswelja.jmdict.generator.dtd.DocumentTypeDefinition
-import com.boswelja.jmdict.generator.dtd.fromSource
+import com.boswelja.xmldtd.codegen.DataClassGenerator
+import com.boswelja.xmldtd.deserialize.DocumentTypeDefinition
+import com.boswelja.xmldtd.deserialize.fromSource
 import kotlinx.io.asSource
 import kotlinx.io.buffered
 import org.gradle.api.DefaultTask

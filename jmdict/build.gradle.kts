@@ -90,7 +90,7 @@ benchmark {
 publish {
     description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
     repositoryUrl = "https://github.com/boswelja/jmdict-kmp"
-    license = "MIT"
+    license = "CC-BY-SA-4.0"
 }
 
 afterEvaluate {
