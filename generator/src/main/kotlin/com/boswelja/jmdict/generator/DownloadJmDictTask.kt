@@ -9,6 +9,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.konan.properties.saveToFile
 import java.net.URI
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Properties
@@ -78,7 +79,7 @@ abstract class DownloadJmDictTask : DefaultTask() {
             // Write captured metadata
             val props = Properties()
             props.setProperty("entryCount", entryCount.toString())
-            props.setProperty("timeUtc", ZonedDateTime.now(ZoneId.of("UTC")).toString())
+            props.setProperty("timeUtc", OffsetDateTime.now(ZoneId.of("UTC")).toString())
             outputMetadata.get().asFile.outputStream().use {
                 props.store(it, null)
             }

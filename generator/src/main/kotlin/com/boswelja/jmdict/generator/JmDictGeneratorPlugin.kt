@@ -77,6 +77,18 @@ class JmDictGeneratorPlugin : Plugin<Project> {
             it.packageName.set(config.packageName)
             it.dtdFile.set(downloadJmDictTask.get().outputDtd)
         }
+        val generateMetadataTask = target.tasks.register(
+            "generateJmDictMetadataObject",
+            GenerateMetadataObjectTask::class.java
+        ) {
+            requireProperty(config::packageName, "\"com.my.package\"")
+
+            it.dependsOn(downloadJmDictTask)
+
+            it.outputDirectory.set(targetGeneratedSourcesDir)
+            it.packageName.set(config.packageName)
+            it.metadataFile.set(downloadJmDictTask.get().outputMetadata)
+        }
 
         // Configure Compose resources
         target.extensions.findByType(ComposeExtension::class.java)?.extensions?.findByType(ResourcesExtension::class.java)?.apply {
@@ -98,12 +110,18 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         target.extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
             // Add generation task as a dependency for build tasks
             target.tasks.withType(KotlinCompile::class.java).configureEach {
+                if (config.generateMetadata.get()) {
+                    it.dependsOn(generateMetadataTask)
+                }
                 it.dependsOn(generateDataClassTask)
             }
 
             // Add generation task as a dependency for source jar tasks
-            target.tasks.withType(org.gradle.jvm.tasks.Jar::class.java).configureEach {
+            target.tasks.withType(Jar::class.java).configureEach {
                 if (it.archiveClassifier.get() == "sources") {
+                    if (config.generateMetadata.get()) {
+                        it.dependsOn(generateMetadataTask)
+                    }
                     it.dependsOn(generateDataClassTask)
                 }
             }
