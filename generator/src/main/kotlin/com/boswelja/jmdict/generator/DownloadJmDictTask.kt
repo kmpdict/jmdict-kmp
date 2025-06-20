@@ -4,9 +4,14 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.jetbrains.kotlin.konan.properties.saveToFile
 import java.net.URI
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Properties
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -30,6 +35,9 @@ abstract class DownloadJmDictTask : DefaultTask() {
     @get:OutputFile
     abstract val outputReleaseNotes: RegularFileProperty
 
+    @get:OutputFile
+    abstract val outputMetadata: RegularFileProperty
+
     @TaskAction
     fun downloadAndUnpackJmDict() {
         val jmDictStream = GZIPOutputStream(outputJmDict.get().asFile.outputStream()).writer()
@@ -38,7 +46,12 @@ abstract class DownloadJmDictTask : DefaultTask() {
 
         val urlConnection = jmDictUrl.get().toURL().openConnection()
         val inStream = GZIPInputStream(urlConnection.inputStream).bufferedReader()
+
+        // Metadata fields
+        var entryCount = 0
+
         try {
+            // Download jmdict and write to separate files
             var finishedRelNotes = false
             var finishedDtd = false
             var line = inStream.readLine()
@@ -56,9 +69,18 @@ abstract class DownloadJmDictTask : DefaultTask() {
                         finishedDtd = true
                     }
                 } else {
+                    if (line.startsWith("<entry>")) entryCount++
                     jmDictStream.appendLine(line)
                 }
                 line = inStream.readLine()
+            }
+
+            // Write captured metadata
+            val props = Properties()
+            props.setProperty("entryCount", entryCount.toString())
+            props.setProperty("timeUtc", ZonedDateTime.now(ZoneId.of("UTC")).toString())
+            outputMetadata.get().asFile.outputStream().use {
+                props.store(it, null)
             }
         } finally {
             jmDictStream.close()
