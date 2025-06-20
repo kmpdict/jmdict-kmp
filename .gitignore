@@ -1,6 +1,7 @@
 *.iml
 .gradle
 .kotlin
+kotlin-js-store
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -23,8 +24,3 @@
 .externalNativeBuild
 .cxx
 local.properties
-
-# Project exclude paths
-/dtd/build/
-/dtd/build/classes/kotlin/jvm/main/
-/dtd/build/classes/kotlin/jvm/test/
