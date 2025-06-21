@@ -1,0 +1,24 @@
+name: "PR Label"
+
+on:
+  - pull_request_target
+
+jobs:
+  label:
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Area labeler
+        uses: actions/labeler@v5
+        with:
+          configuration-path: .github/area-labeler.yml
+          sync-labels: true
+          dot: true
+
+      - name: Size labeler
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          ignore_file_deletions: true
