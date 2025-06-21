@@ -7,3 +7,6 @@ documentation:
 dependencies:
   - changed-files:
     - any-glob-to-any-file: 'gradle/libs.versions.toml'
+generator:
+  - changed-files:
+    - any-glob-to-any-file: 'generator/**'
