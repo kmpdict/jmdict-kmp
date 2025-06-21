@@ -76,6 +76,7 @@ afterEvaluate {
     tasks.withType(org.gradle.jvm.tasks.Jar::class) {
         if (archiveClassifier.get() == "sources") {
             dependsOn("generateJmDictDataClasses")
+            dependsOn("generateJmDictMetadataObject")
         }
     }
 }
