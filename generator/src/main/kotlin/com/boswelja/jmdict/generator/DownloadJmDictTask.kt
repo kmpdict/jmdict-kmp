@@ -4,17 +4,18 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.kotlin.konan.properties.saveToFile
 import java.net.URI
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.Properties
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 abstract class DownloadJmDictTask : DefaultTask() {
 
@@ -39,8 +40,18 @@ abstract class DownloadJmDictTask : DefaultTask() {
     @get:OutputFile
     abstract val outputMetadata: RegularFileProperty
 
+    @OptIn(ExperimentalTime::class)
     @TaskAction
     fun downloadAndUnpackJmDict() {
+        val outputJmDictFile = outputJmDict.get().asFile
+        // If the jmdict file exists and is not older than 24 hours, return
+        if (outputJmDictFile.exists()) {
+            val lastModifiedInstant = Instant.fromEpochMilliseconds(outputJmDictFile.lastModified())
+            if (Clock.System.now() - lastModifiedInstant < 23.hours) {
+                return
+            }
+        }
+
         val jmDictStream = GZIPOutputStream(outputJmDict.get().asFile.outputStream()).writer()
         val releaseNotesOutputStream = outputReleaseNotes.get().asFile.outputStream().writer()
         val dtdOutputStream = outputDtd.get().asFile.outputStream().writer()
