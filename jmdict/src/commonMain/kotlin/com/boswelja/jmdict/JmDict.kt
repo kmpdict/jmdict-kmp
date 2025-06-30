@@ -26,7 +26,7 @@ internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {
         .chunked(100)
         .flatMap { entryLines ->
             if (entryLines.isNotEmpty()) {
-                Serializer.decodeFromString<JMdict>("<JMdict>${entryLines.flatten().joinToString(separator = "")}</JMdict>").entrys
+                Serializer.decodeFromString<JMdict>("<JMdict>${entryLines.flatten().joinToString(separator = "")}</JMdict>").entries
             } else emptyList()
         }
 }
