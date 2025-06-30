@@ -7,8 +7,7 @@ kotlinx-io = "0.7.0"
 
 benchmark = "0.4.14"
 
-xmldtd-kt = "0.0.4"
-kotlinpoet = "2.2.0"
+xmldtd-kt = "0.0.5"
 
 [libraries]
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
