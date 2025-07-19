@@ -1,8 +1,15 @@
 package com.boswelja.jmdict
 
+import com.squareup.zstd.okio.zstdDecompress
+import io.github.boswelja.jmdict.jmdict.generated.resources.Res
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
 import nl.adaptivity.xmlutil.serialization.XML
+import okio.Buffer
+import okio.buffer
 
 @OptIn(ExperimentalXmlUtilApi::class)
 internal val Serializer = XML {
@@ -17,7 +24,16 @@ internal val Serializer = XML {
     }
 }
 
-expect suspend fun streamJmDict(): Sequence<Entry>
+suspend fun streamJmDict(): Sequence<Entry> {
+    val compressedBytes = withContext(Dispatchers.IO) {
+        Res.readBytes("files/jmdict.xml")
+    }
+    val buffer = Buffer()
+    buffer.write(compressedBytes)
+    return buffer.zstdDecompress().buffer().readUtf8()
+        .lineSequence()
+        .asEntrySequence()
+}
 
 internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {
     return this

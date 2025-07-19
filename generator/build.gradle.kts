@@ -23,6 +23,8 @@ dependencies {
 
     implementation(libs.boswelja.xmldtd)
     implementation(libs.kotlinx.io.core)
+    implementation(libs.okio.core)
+    implementation(libs.okio.zstd)
 
     testImplementation(libs.kotlin.test)
 }
