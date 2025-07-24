@@ -89,7 +89,7 @@ benchmark {
 
 publish {
     description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
-    repositoryUrl = "https://github.com/boswelja/jmdict-kmp"
+    repositoryUrl = "https://github.com/kmpdict/jmdict-kmp"
     license = "CC-BY-SA-4.0"
 }
 
@@ -97,6 +97,7 @@ afterEvaluate {
     tasks.withType(org.gradle.jvm.tasks.Jar::class) {
         if (archiveClassifier.get() == "sources") {
             dependsOn("generateJmDictDataClasses")
+            dependsOn("generateJmDictMetadataObject")
         }
     }
 }

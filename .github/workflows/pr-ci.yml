@@ -25,6 +25,7 @@ jobs:
         run: ./gradlew build --scan
   test:
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +35,8 @@ jobs:
           java-version: 21
           distribution: temurin
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
       - name: Test
-        run: ./gradlew allTests --scan
+        run: ./gradlew allTests

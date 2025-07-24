@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     id("com.vanniktech.maven.publish")
 }
@@ -18,7 +16,7 @@ version = findProperty("version")!!
 afterEvaluate {
     publishing {
         repositories {
-            maven("https://maven.pkg.github.com/boswelja/jmdict-kmp") {
+            maven("https://maven.pkg.github.com/kmpdict/jmdict-kmp") {
                 name = "github"
                 credentials(PasswordCredentials::class)
             }
@@ -28,7 +26,7 @@ afterEvaluate {
     mavenPublishing {
         coordinates(group as String, name, version as String)
 
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+        publishToMavenCentral(automaticRelease = true)
         signAllPublications()
 
         pom {

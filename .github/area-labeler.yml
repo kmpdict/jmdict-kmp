@@ -1,9 +1,19 @@
 workflows:
   - changed-files:
     - any-glob-to-any-file: '.github/**/*.yml'
+
 documentation:
   - changed-files:
     - any-glob-to-any-file: '**/*.md'
+
 dependencies:
   - changed-files:
     - any-glob-to-any-file: 'gradle/libs.versions.toml'
+
+generator:
+  - changed-files:
+    - any-glob-to-any-file: 'generator/**'
+
+linter-config:
+  - changed-files:
+    - any-glob-to-any-file: 'config/detekt.yml'
