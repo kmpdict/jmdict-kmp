@@ -5,6 +5,9 @@ import com.boswelja.xmldtd.deserialize.DocumentTypeDefinition
 import com.boswelja.xmldtd.deserialize.fromSource
 import kotlinx.io.asSource
 import kotlinx.io.buffered
+import okio.FileSystem
+import okio.buffer
+import okio.source
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty

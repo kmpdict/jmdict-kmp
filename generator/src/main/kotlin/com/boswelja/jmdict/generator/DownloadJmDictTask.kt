@@ -1,5 +1,8 @@
 package com.boswelja.jmdict.generator
 
+import com.squareup.zstd.okio.zstdCompress
+import okio.buffer
+import okio.sink
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -11,7 +14,6 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.Properties
 import java.util.zip.GZIPInputStream
-import java.util.zip.GZIPOutputStream
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
@@ -52,7 +54,7 @@ abstract class DownloadJmDictTask : DefaultTask() {
             }
         }
 
-        val jmDictStream = GZIPOutputStream(outputJmDict.get().asFile.outputStream()).writer()
+        val jmDictStream = outputJmDict.get().asFile.sink().zstdCompress().buffer()
         val releaseNotesOutputStream = outputReleaseNotes.get().asFile.outputStream().writer()
         val dtdOutputStream = outputDtd.get().asFile.outputStream().writer()
 
@@ -82,7 +84,8 @@ abstract class DownloadJmDictTask : DefaultTask() {
                     }
                 } else {
                     if (line.startsWith("<entry>")) entryCount++
-                    jmDictStream.appendLine(line)
+                    jmDictStream.writeUtf8(line)
+                    jmDictStream.writeUtf8("\n")
                 }
                 line = inStream.readLine()
             }
