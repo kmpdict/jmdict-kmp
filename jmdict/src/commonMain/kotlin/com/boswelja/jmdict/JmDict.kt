@@ -9,6 +9,7 @@ import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
 import nl.adaptivity.xmlutil.serialization.XML
 import okio.Buffer
+import okio.BufferedSource
 import okio.buffer
 
 @OptIn(ExperimentalXmlUtilApi::class)
@@ -30,9 +31,19 @@ suspend fun streamJmDict(): Sequence<Entry> {
     }
     val buffer = Buffer()
     buffer.write(compressedBytes)
-    return buffer.zstdDecompress().buffer().readUtf8()
-        .lineSequence()
+    return buffer
+        .zstdDecompress()
+        .buffer()
+        .readLines()
         .asEntrySequence()
+}
+
+internal fun BufferedSource.readLines(): Sequence<String> {
+    return sequence {
+        while (!this@readLines.exhausted()) {
+            yield(readUtf8Line()!!)
+        }
+    }
 }
 
 internal fun Sequence<String>.asEntrySequence(): Sequence<Entry> {
