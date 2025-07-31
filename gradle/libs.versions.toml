@@ -17,7 +17,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 
 androidx-test-core = { module = "androidx.test:core", version = "1.6.1" }
-androidx-test-runner = { module = "androidx.test:runner", version = "1.6.2" }
+androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
 
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "benchmark" }
 
