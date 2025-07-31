@@ -8,6 +8,8 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import java.net.URI
 import kotlin.reflect.KProperty0
 
@@ -113,6 +115,12 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 if (config.generateMetadata.get()) {
                     it.dependsOn(generateMetadataTask)
                 }
+                it.dependsOn(generateDataClassTask)
+            }
+            target.tasks.withType(KotlinNativeCompile::class.java).configureEach {
+                it.dependsOn(generateDataClassTask)
+            }
+            target.tasks.withType(KotlinCompileCommon::class.java).configureEach {
                 it.dependsOn(generateDataClassTask)
             }
 
