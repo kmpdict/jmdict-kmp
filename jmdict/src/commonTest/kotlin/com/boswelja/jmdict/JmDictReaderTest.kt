@@ -3,6 +3,7 @@ package com.boswelja.jmdict
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class JmDictReaderTest {
 
@@ -14,5 +15,13 @@ class JmDictReaderTest {
             Metadata.entryCount,
             entryCount
         )
+    }
+
+    @Test
+    fun streamJmDict_hasNonEnglishEntries() = runTest {
+        val hasNonEnglish = streamJmDict().any { entry ->
+            entry.senses.any { sense -> sense.lsources.any { it.lang != "eng" } }
+        }
+        assertTrue(hasNonEnglish)
     }
 }
