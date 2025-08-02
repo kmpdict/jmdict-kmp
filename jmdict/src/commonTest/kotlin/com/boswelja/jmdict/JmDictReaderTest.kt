@@ -20,7 +20,9 @@ class JmDictReaderTest {
     @Test
     fun streamJmDict_hasNonEnglishEntries() = runTest {
         val hasNonEnglish = streamJmDict().any { entry ->
-            entry.senses.any { sense -> sense.lsources.any { it.lang != "eng" } }
+            entry.senses.any { sense ->
+                sense.glosses.any { it.lang != "eng" }
+            }
         }
         assertTrue(hasNonEnglish)
     }
