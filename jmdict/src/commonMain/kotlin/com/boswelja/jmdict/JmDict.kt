@@ -15,7 +15,7 @@ import okio.buffer
 @OptIn(ExperimentalXmlUtilApi::class)
 internal val Serializer = XML {
     defaultPolicy {
-        pedantic = true
+        pedantic = false
         autoPolymorphic = true
         throwOnRepeatedElement = true
         isStrictBoolean = true
