@@ -135,8 +135,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                         it.outputDirectory.set(generatedResDir)
                         it.dependsOn(downloadJmDictTask)
                     }
-                    target.tasks.getByName("jvmProcessResources").dependsOn(copyResTask)
-                    sourceSets.jvmMain.configure { it.resources.srcDir(generatedResDir) }
+                    sourceSets.jvmMain.configure { it.resources.srcDir(copyResTask.map { it.outputDirectory }) }
                 }
                 "android" -> {
                     val generatedResDir = target.layout.buildDirectory.dir("generated/jmDict/androidMainResources")
@@ -145,10 +144,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                         it.outputDirectory.set(generatedResDir)
                         it.dependsOn(downloadJmDictTask)
                     }
-                    target.tasks.getByName("compileAndroidMain").apply {
-                        dependsOn(copyResTask)
-                    }
-                    sourceSets.androidMain.configure { it.resources.srcDir(generatedResDir) }
+                    sourceSets.androidMain.configure { it.resources.srcDir(copyResTask.map { it.outputDirectory }) }
                 }
             }
         }
