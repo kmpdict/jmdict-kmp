@@ -106,15 +106,10 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 "metadata" -> {
                     // Add the generated source dir to the common source set
                     sourceSets.commonMain.configure {
-                        it.kotlin.srcDir(targetGeneratedSourcesDir)
-                    }
-
-                    // Add generation task as a dependency for build tasks
-                    target.tasks.withType(KotlinCompile::class.java).configureEach {
+                        it.kotlin.srcDir(generateDataClassTask.map { it.outputDirectory })
                         if (config.generateMetadata.get()) {
-                            it.dependsOn(generateMetadataTask)
+                            it.kotlin.srcDir(generateMetadataTask.map { it.outputDirectory })
                         }
-                        it.dependsOn(generateDataClassTask)
                     }
 
                     // Add generation task as a dependency for source jar tasks
@@ -126,7 +121,6 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                             it.dependsOn(generateDataClassTask)
                         }
                     }
-
                 }
                 "jvm" -> {
                     val generatedResDir = target.layout.buildDirectory.dir("generated/jmDict/jvmMainResources")
