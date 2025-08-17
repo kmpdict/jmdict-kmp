@@ -3,10 +3,12 @@ package com.boswelja.jmdict.generator
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
 
 abstract class CopyAndroidResourcesTask : DefaultTask() {
 
@@ -19,9 +21,12 @@ abstract class CopyAndroidResourcesTask : DefaultTask() {
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
+    @get:Inject
+    abstract val fs: FileSystemOperations
+
     @TaskAction
     fun copyJmDictToResources() {
-        project.copy(Action { t ->
+        fs.copy(Action { t ->
             t.from(jmDictFile)
             t.into(outputDirectory.dir("raw/"))
         })
