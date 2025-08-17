@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     alias(libs.plugins.detekt)
@@ -23,17 +21,14 @@ kotlin {
         minSdk = 23
 
         withDeviceTest {}
-
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.components.resources)
-            implementation(compose.runtime)
             implementation(libs.kotlinx.serialization.xml)
             implementation(libs.okio.core)
             implementation(libs.okio.zstd)
+            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -72,13 +67,4 @@ publish {
     description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
     repositoryUrl = "https://github.com/kmpdict/jmdict-kmp"
     license = "CC-BY-SA-4.0"
-}
-
-afterEvaluate {
-    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
-        if (archiveClassifier.get() == "sources") {
-            dependsOn("generateJmDictDataClasses")
-            dependsOn("generateJmDictMetadataObject")
-        }
-    }
 }

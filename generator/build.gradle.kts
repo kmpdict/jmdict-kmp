@@ -19,12 +19,12 @@ kotlin {
 
 dependencies {
     implementation(libs.kotlin.plugin)
-    implementation(libs.compose.gradlePlugin)
 
     implementation(libs.boswelja.xmldtd)
     implementation(libs.kotlinx.io.core)
     implementation(libs.okio.core)
     implementation(libs.okio.zstd)
+    implementation(libs.kotlinpoet)
 
     testImplementation(libs.kotlin.test)
 }

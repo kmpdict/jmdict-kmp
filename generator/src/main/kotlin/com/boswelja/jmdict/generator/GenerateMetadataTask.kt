@@ -8,10 +8,9 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.compose.internal.com.squareup.kotlinpoet.CodeBlock
-import org.jetbrains.compose.internal.com.squareup.kotlinpoet.FileSpec
-import org.jetbrains.compose.internal.com.squareup.kotlinpoet.PropertySpec
-import org.jetbrains.compose.internal.com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.FileSpec
 import java.util.Properties
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
