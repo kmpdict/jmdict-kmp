@@ -21,7 +21,6 @@ kotlin {
         minSdk = 23
 
         withDeviceTest {}
-        withHostTest {}
     }
 
     sourceSets {
