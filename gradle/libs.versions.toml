@@ -24,6 +24,8 @@ kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-
 android-libraryGradlePlugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
 kotlin-multiplatformGradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
 
+androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.2.0" }
+
 boswelja-xmldtd = { module = "io.github.boswelja.xmldtd:codegen", version.ref = "xmldtd-kt" }
 
 okio-core = { module = "com.squareup.okio:okio", version = "3.16.0" }

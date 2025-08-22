@@ -14,6 +14,11 @@ android {
     defaultConfig {
         minSdk = 23
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
@@ -23,7 +28,9 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release")
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -35,6 +42,14 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.startup)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("org.robolectric:robolectric:4.15.1")
+            implementation("androidx.test.ext:junit-ktx:1.3.0")
         }
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
