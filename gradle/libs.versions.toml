@@ -19,9 +19,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 
-androidx-test-core = { module = "androidx.test:core", version = "1.7.0" }
-androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
-
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "benchmark" }
 
 android-libraryGradlePlugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
@@ -35,7 +32,7 @@ okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.3.0" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 
 [plugins]
-android-library = { id = "com.android.kotlin.multiplatform.library" }
+android-library = { id = "com.android.library" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

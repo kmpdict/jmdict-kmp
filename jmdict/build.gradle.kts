@@ -8,6 +8,14 @@ plugins {
     id("com.boswelja.publish")
 }
 
+android {
+    namespace = "com.boswelja.jmdict"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 23
+    }
+}
+
 kotlin {
     jvmToolchain(21)
     jvm {
@@ -15,13 +23,7 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
-    androidLibrary {
-        namespace = "com.boswelja.jmdict"
-        compileSdk = 36
-        minSdk = 23
-
-        withDeviceTest {}
-    }
+    androidTarget()
 
     sourceSets {
         commonMain.dependencies {
@@ -36,13 +38,6 @@ kotlin {
         }
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
-        }
-        getByName("androidDeviceTest").dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutines.test)
-
-            implementation(libs.androidx.test.core)
-            implementation(libs.androidx.test.runner)
         }
     }
 }

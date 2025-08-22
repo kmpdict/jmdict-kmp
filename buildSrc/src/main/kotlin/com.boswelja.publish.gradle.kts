@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.KotlinMultiplatform
+
 plugins {
     id("com.vanniktech.maven.publish")
 }
@@ -27,7 +29,7 @@ afterEvaluate {
         coordinates(group as String, name, version as String)
 
         publishToMavenCentral(automaticRelease = true)
-        signAllPublications()
+        //signAllPublications()
 
         pom {
             name = project.name
