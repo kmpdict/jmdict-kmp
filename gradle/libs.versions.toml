@@ -29,7 +29,7 @@ androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.2
 boswelja-xmldtd = { module = "io.github.boswelja.xmldtd:codegen", version.ref = "xmldtd-kt" }
 
 okio-core = { module = "com.squareup.okio:okio", version = "3.16.0" }
-okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.3.0" }
+okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.4.0" }
 
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 
