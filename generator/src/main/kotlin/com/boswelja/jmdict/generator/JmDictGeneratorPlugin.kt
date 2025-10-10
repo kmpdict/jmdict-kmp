@@ -1,5 +1,7 @@
 package com.boswelja.jmdict.generator
 
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -133,13 +135,16 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                 }
                 "android" -> {
                     val generatedResDir = target.layout.buildDirectory.dir("generated/jmDict/androidMainResources")
-                    val copyResTask = target.tasks.register("copyAndroidMainJmDictResources", CopyResourcesTask::class.java) {
+                    val copyResTask = target.tasks.register("copyAndroidMainJmDictResources", CopyAndroidResourcesTask::class.java) {
                         it.jmDictFile.set(downloadJmDictTask.get().outputJmDict)
                         it.outputDirectory.set(generatedResDir)
                         it.dependsOn(downloadJmDictTask)
                     }
-                    sourceSets.androidMain.configure { it.resources.srcDir(copyResTask.map { it.outputDirectory }) }
+                    target.extensions.getByType(LibraryExtension::class.java).sourceSets.getByName("main")
+                        .res
+                        .srcDir(copyResTask.map { it.outputDirectory })
                 }
+                else -> error("Unknown target ${it.name}")
             }
         }
     }

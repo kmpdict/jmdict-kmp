@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.KotlinMultiplatform
+
 plugins {
     id("com.vanniktech.maven.publish")
 }

@@ -1,13 +1,13 @@
 [versions]
-agp = "8.12.1"
-kotlin = "2.2.10"
+agp = "8.13.0"
+kotlin = "2.2.20"
 
 kotlinx-coroutines = "1.10.2"
 kotlinx-io = "0.8.0"
 
 benchmark = "0.4.14"
 
-xmldtd-kt = "1.0.0-alpha07"
+xmldtd-kt = "1.0.0-beta01"
 
 kotlinpoet = "2.2.0"
 
@@ -19,23 +19,22 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 
-androidx-test-core = { module = "androidx.test:core", version = "1.7.0" }
-androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
-
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "benchmark" }
 
 android-libraryGradlePlugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
 kotlin-multiplatformGradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
 
+androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.2.0" }
+
 boswelja-xmldtd = { module = "io.github.boswelja.xmldtd:codegen", version.ref = "xmldtd-kt" }
 
 okio-core = { module = "com.squareup.okio:okio", version = "3.16.0" }
-okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.3.0" }
+okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.4.0" }
 
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 
 [plugins]
-android-library = { id = "com.android.kotlin.multiplatform.library" }
+android-library = { id = "com.android.library" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

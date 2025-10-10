@@ -10,6 +10,19 @@ plugins {
     id("com.boswelja.publish")
 }
 
+android {
+    namespace = "com.boswelja.jmdict"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 23
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+}
+
 kotlin {
     jvmToolchain(21)
 
@@ -19,14 +32,8 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
-
-    // Android target
-    androidLibrary {
-        namespace = "com.boswelja.jmdict"
-        compileSdk = 36
-        minSdk = 23
-
-        withDeviceTest {}
+    androidTarget {
+        publishLibraryVariants("release")
     }
 
     // Apple targets
@@ -54,15 +61,16 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
+        androidMain.dependencies {
+            implementation(libs.androidx.startup)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("org.robolectric:robolectric:4.16")
+            implementation("androidx.test.ext:junit-ktx:1.3.0")
+        }
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
-        }
-        getByName("androidDeviceTest").dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutines.test)
-
-            implementation(libs.androidx.test.core)
-            implementation(libs.androidx.test.runner)
         }
     }
 }

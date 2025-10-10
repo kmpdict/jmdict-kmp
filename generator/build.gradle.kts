@@ -19,6 +19,7 @@ kotlin {
 
 dependencies {
     implementation(libs.kotlin.plugin)
+    implementation(libs.android.libraryGradlePlugin)
 
     implementation(libs.boswelja.xmldtd)
     implementation(libs.kotlinx.io.core)
