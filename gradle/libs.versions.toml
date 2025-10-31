@@ -14,7 +14,7 @@ kotlinpoet = "2.2.0"
 [libraries]
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinx-serialization-xml = { module = "io.github.pdvrieze.xmlutil:serialization", version = "0.91.2" }
+kotlinx-serialization-xml = { module = "io.github.pdvrieze.xmlutil:serialization", version = "0.91.3" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
