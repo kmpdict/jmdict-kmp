@@ -36,11 +36,6 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
-        androidUnitTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation("org.robolectric:robolectric:4.16")
-            implementation("androidx.test.ext:junit-ktx:1.3.0")
-        }
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
         }
