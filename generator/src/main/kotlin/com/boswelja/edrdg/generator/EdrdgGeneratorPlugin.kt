@@ -1,6 +1,5 @@
 package com.boswelja.edrdg.generator
 
-import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -137,9 +136,7 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                         it.outputDirectory.set(generatedResDir)
                         it.dependsOn(downloadDictTask)
                     }
-                    target.extensions.getByType(LibraryExtension::class.java).sourceSets.getByName("main")
-                        .res
-                        .srcDir(copyResTask.map { it.outputDirectory })
+                    sourceSets.androidMain.configure { it.resources.srcDir(copyResTask.map { it.outputDirectory }) }
                 }
                 else -> error("Unknown target ${it.name}")
             }

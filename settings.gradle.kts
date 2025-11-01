@@ -23,6 +23,10 @@ rootProject.name = "edrdg-kmp"
 
 includeBuild("generator")
 
-include(":jmdict")
+include(
+    ":jmdict",
+    ":jmnedict",
+    "kanjidic2",
+)
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

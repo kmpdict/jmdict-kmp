@@ -10,19 +10,6 @@ plugins {
     id("com.boswelja.publish")
 }
 
-android {
-    namespace = "com.boswelja.jmdict"
-    compileSdk = 36
-    defaultConfig {
-        minSdk = 23
-    }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-}
-
 kotlin {
     jvmToolchain(21)
     jvm {
@@ -30,8 +17,14 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
-    androidTarget {
-        publishLibraryVariants("release")
+    androidLibrary {
+        namespace = "com.boswelja.jmdict"
+        compileSdk = 36
+        minSdk = 23
+
+        withDeviceTest {}
+
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     sourceSets {

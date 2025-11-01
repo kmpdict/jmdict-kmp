@@ -1,12 +1,12 @@
+import java.net.URI
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     alias(libs.plugins.detekt)
-    id("com.boswelja.kanjidict.generator")
+    id("com.boswelja.edrdg.generator")
     id("com.boswelja.publish")
 }
 
@@ -29,8 +29,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.components.resources)
-            implementation(compose.runtime)
             implementation(libs.kotlinx.serialization.xml)
             implementation(libs.okio.core)
             implementation(libs.okio.zstd)
@@ -58,7 +56,8 @@ detekt {
     basePath = rootDir.absolutePath
 }
 
-kanjiDict {
+edrdgDict {
+    dictUrl = URI("https://www.edrdg.org/kanjidic/kanjidic2.xml.gz")
     packageName = "com.boswelja.kanjidict"
 }
 
