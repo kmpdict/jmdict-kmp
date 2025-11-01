@@ -72,12 +72,3 @@ publish {
     repositoryUrl = "https://github.com/kmpdict/edrdg-kmp/tree/main/jmnedict"
     license = "CC-BY-SA-4.0"
 }
-
-afterEvaluate {
-    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
-        if (archiveClassifier.get() == "sources") {
-            dependsOn("generateJmneDictDataClasses")
-            dependsOn("generateJmneDictMetadataObject")
-        }
-    }
-}
