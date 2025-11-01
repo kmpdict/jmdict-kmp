@@ -83,7 +83,7 @@ abstract class DownloadDictTask : DefaultTask() {
                         finishedDtd = true
                     }
                 } else {
-                    if (line.startsWith("<entry>")) entryCount++
+                    if (line.startsWith("<entry>") || line.startsWith("<character>")) entryCount++
                     jmDictStream.writeUtf8(line)
                     jmDictStream.writeUtf8("\n")
                 }
