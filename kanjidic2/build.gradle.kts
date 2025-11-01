@@ -29,9 +29,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core"))
             implementation(libs.kotlinx.serialization.xml)
-            implementation(libs.okio.core)
-            implementation(libs.okio.zstd)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

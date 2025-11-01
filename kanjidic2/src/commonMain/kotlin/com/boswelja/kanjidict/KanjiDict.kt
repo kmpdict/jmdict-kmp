@@ -1,19 +1,13 @@
 package com.boswelja.kanjidict
 
-import com.squareup.zstd.okio.zstdDecompress
-import io.github.boswelja.kanjidic2.kanjidic2.generated.resources.Res
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
+import com.boswelja.edrdg.core.chunkedUntil
+import com.boswelja.edrdg.core.streamDict
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
 import nl.adaptivity.xmlutil.serialization.XML
 import nl.adaptivity.xmlutil.serialization.XmlElement
-import okio.Buffer
-import okio.BufferedSource
-import okio.buffer
 
 @OptIn(ExperimentalXmlUtilApi::class)
 internal val Serializer = XML {
@@ -29,24 +23,8 @@ internal val Serializer = XML {
 }
 
 suspend fun streamKanjiDict(): Sequence<Character> {
-    val compressedBytes = withContext(Dispatchers.IO) {
-        Res.readBytes("files/kanjidict.xml")
-    }
-    val buffer = Buffer()
-    buffer.write(compressedBytes)
-    return buffer
-        .zstdDecompress()
-        .buffer()
-        .readLines()
+    return streamDict()
         .asCharacterSequence()
-}
-
-internal fun BufferedSource.readLines(): Sequence<String> {
-    return sequence {
-        while (!this@readLines.exhausted()) {
-            yield(readUtf8Line()!!)
-        }
-    }
 }
 
 internal fun Sequence<String>.asCharacterSequence(): Sequence<Character> {

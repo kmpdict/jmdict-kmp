@@ -1,6 +1,6 @@
-package com.boswelja.kanjidict
+package com.boswelja.edrdg.core
 
-internal fun <T> Sequence<T>.chunkedUntil(predicate: (T) -> Boolean): Sequence<List<T>> {
+public fun <T> Sequence<T>.chunkedUntil(predicate: (T) -> Boolean): Sequence<List<T>> {
     return sequence {
         var list = mutableListOf<T>()
         this@chunkedUntil.forEach {

@@ -24,6 +24,7 @@ rootProject.name = "edrdg-kmp"
 includeBuild("generator")
 
 include(
+    ":core",
     ":jmdict",
     ":jmnedict",
     "kanjidic2",
