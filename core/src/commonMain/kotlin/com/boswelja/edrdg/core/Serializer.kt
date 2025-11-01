@@ -5,7 +5,7 @@ import nl.adaptivity.xmlutil.serialization.XML
 import okio.Source
 import okio.buffer
 
-public val Serializer = XML {
+public val Serializer: XML = XML {
     defaultPolicy {
         pedantic = false
         autoPolymorphic = true

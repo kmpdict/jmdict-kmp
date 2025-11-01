@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -8,7 +6,9 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
     jvmToolchain(21)
+
     jvm ()
     androidLibrary {
         namespace = "com.boswelja.edrdg.core"
