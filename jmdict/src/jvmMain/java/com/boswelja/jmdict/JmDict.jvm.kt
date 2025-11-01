@@ -7,6 +7,6 @@ import okio.source
 
 internal actual suspend fun readCompressedBytes(): Source {
     return withContext(Dispatchers.IO) {
-        this.javaClass.getResourceAsStream("/jmdict.xml")!!.source()
+        this.javaClass.getResourceAsStream("/dict.xml")!!.source()
     }
 }

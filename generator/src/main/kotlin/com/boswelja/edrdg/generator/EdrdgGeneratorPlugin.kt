@@ -1,25 +1,23 @@
-package com.boswelja.jmdict.generator
+package com.boswelja.edrdg.generator
 
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 import kotlin.reflect.KProperty0
 
-internal const val ExtensionName: String = "jmDict"
+internal const val ExtensionName: String = "edrdgDict"
 
-interface JmDictExtension {
+interface EdrdgExtension {
 
     /**
-     * The URL for the full JMDict archive. Defaults to `ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz`.
+     * The URL for the full EDRDG archive. Defaults to `ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz`.
      */
-    val jmDictUrl: Property<URI>
+    val dictUrl: Property<URI>
 
     /**
      * The package name for the generated sources.
@@ -39,25 +37,24 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         // Create the Gradle extension for configuration
         val config = target.extensions.create(
             ExtensionName,
-            JmDictExtension::class.java
+            EdrdgExtension::class.java
         )
         config.generateMetadata.convention(true)
-        config.jmDictUrl.convention(URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz"))
 
-        val jmDictFile = target.layout.buildDirectory.file("resources/jmDict/jmdict.xml")
-        val relNotesFile = target.layout.buildDirectory.file("resources/jmDict/changelog.xml")
-        val dtdFile = target.layout.buildDirectory.file("resources/jmDict/dtd.xml")
-        val metadataFile = target.layout.buildDirectory.file("resources/jmDict/metadata.properties")
+        val dictFile = target.layout.buildDirectory.file("resources/edrdg/dict.xml")
+        val relNotesFile = target.layout.buildDirectory.file("resources/edrdg/changelog.xml")
+        val dtdFile = target.layout.buildDirectory.file("resources/edrdg/dtd.xml")
+        val metadataFile = target.layout.buildDirectory.file("resources/edrdg/metadata.properties")
 
         // Register the download task
-        val downloadJmDictTask = target.tasks.register(
-            "downloadJmDict",
-            DownloadJmDictTask::class.java
+        val downloadDictTask = target.tasks.register(
+            "downloadDict",
+            DownloadDictTask::class.java
         ) {
-            requireProperty(config::jmDictUrl, "ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
+            requireProperty(config::dictUrl, "ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
 
-            it.jmDictUrl.set(config.jmDictUrl)
-            it.outputJmDict.set(jmDictFile)
+            it.dictUrl.set(config.dictUrl)
+            it.outputDict.set(dictFile)
             it.outputDtd.set(dtdFile)
             it.outputReleaseNotes.set(relNotesFile)
             it.outputMetadata.set(metadataFile)
@@ -66,41 +63,41 @@ class JmDictGeneratorPlugin : Plugin<Project> {
         target.afterEvaluate {
             // Configure KMP projects
             target.extensions.findByType(KotlinMultiplatformExtension::class.java)
-                ?.configureKmp(target, config, downloadJmDictTask)
+                ?.configureKmp(target, config, downloadDictTask)
         }
     }
 
     private fun KotlinMultiplatformExtension.configureKmp(
         target: Project,
-        config: JmDictExtension,
-        downloadJmDictTask: TaskProvider<DownloadJmDictTask>,
+        config: EdrdgExtension,
+        downloadDictTask: TaskProvider<DownloadDictTask>,
     ) {
         val targetGeneratedSourcesDir = target.layout.buildDirectory.dir("generated/jmDict/kotlin")
 
         // Register the generation tasks
         val generateDataClassTask = target.tasks.register(
-            "generateJmDictDataClasses",
+            "generateDictDataClasses",
             GenerateDataClassesTask::class.java
         ) {
             requireProperty(config::packageName, "\"com.my.package\"")
 
-            it.dependsOn(downloadJmDictTask)
+            it.dependsOn(downloadDictTask)
 
             it.outputDirectory.set(targetGeneratedSourcesDir)
             it.packageName.set(config.packageName)
-            it.dtdFile.set(downloadJmDictTask.get().outputDtd)
+            it.dtdFile.set(downloadDictTask.get().outputDtd)
         }
         val generateMetadataTask = target.tasks.register(
-            "generateJmDictMetadataObject",
+            "generateDictMetadataObject",
             GenerateMetadataObjectTask::class.java
         ) {
             requireProperty(config::packageName, "\"com.my.package\"")
 
-            it.dependsOn(downloadJmDictTask)
+            it.dependsOn(downloadDictTask)
 
             it.outputDirectory.set(targetGeneratedSourcesDir)
             it.packageName.set(config.packageName)
-            it.metadataFile.set(downloadJmDictTask.get().outputMetadata)
+            it.metadataFile.set(downloadDictTask.get().outputMetadata)
         }
 
         this.targets.configureEach {
@@ -125,20 +122,20 @@ class JmDictGeneratorPlugin : Plugin<Project> {
                     }
                 }
                 "jvm" -> {
-                    val generatedResDir = target.layout.buildDirectory.dir("generated/jmDict/jvmMainResources")
-                    val copyResTask = target.tasks.register("copyJvmMainJmDictResources", CopyResourcesTask::class.java) {
-                        it.jmDictFile.set(downloadJmDictTask.get().outputJmDict)
+                    val generatedResDir = target.layout.buildDirectory.dir("generated/edrdgDict/jvmMainResources")
+                    val copyResTask = target.tasks.register("copyJvmMainDictResources", CopyResourcesTask::class.java) {
+                        it.jmDictFile.set(downloadDictTask.get().outputDict)
                         it.outputDirectory.set(generatedResDir)
-                        it.dependsOn(downloadJmDictTask)
+                        it.dependsOn(downloadDictTask)
                     }
                     sourceSets.jvmMain.configure { it.resources.srcDir(copyResTask.map { it.outputDirectory }) }
                 }
                 "android" -> {
-                    val generatedResDir = target.layout.buildDirectory.dir("generated/jmDict/androidMainResources")
-                    val copyResTask = target.tasks.register("copyAndroidMainJmDictResources", CopyAndroidResourcesTask::class.java) {
-                        it.jmDictFile.set(downloadJmDictTask.get().outputJmDict)
+                    val generatedResDir = target.layout.buildDirectory.dir("generated/edrdgDict/androidMainResources")
+                    val copyResTask = target.tasks.register("copyAndroidMainDictResources", CopyAndroidResourcesTask::class.java) {
+                        it.jmDictFile.set(downloadDictTask.get().outputDict)
                         it.outputDirectory.set(generatedResDir)
-                        it.dependsOn(downloadJmDictTask)
+                        it.dependsOn(downloadDictTask)
                     }
                     target.extensions.getByType(LibraryExtension::class.java).sourceSets.getByName("main")
                         .res

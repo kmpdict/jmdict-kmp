@@ -1,10 +1,12 @@
+import java.net.URI
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlinx.benchmark)
     alias(libs.plugins.detekt)
-    id("com.boswelja.jmdict.generator")
+    id("com.boswelja.edrdg.generator")
     id("com.boswelja.publish")
 }
 
@@ -63,7 +65,8 @@ detekt {
     basePath = rootDir.absolutePath
 }
 
-jmDict {
+edrdgDict {
+    dictUrl = URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
     packageName = "com.boswelja.jmdict"
 }
 

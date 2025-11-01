@@ -6,9 +6,9 @@ plugins {
 
 gradlePlugin {
     plugins {
-        create("com.boswelja.jmdict") {
-            id = "com.boswelja.jmdict.generator"
-            implementationClass = "com.boswelja.jmdict.generator.JmDictGeneratorPlugin"
+        create("com.boswelja.edrdg") {
+            id = "com.boswelja.edrdg.generator"
+            implementationClass = "com.boswelja.edrdg.generator.JmDictGeneratorPlugin"
         }
     }
 }

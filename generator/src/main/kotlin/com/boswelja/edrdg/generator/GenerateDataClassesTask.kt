@@ -1,4 +1,4 @@
-package com.boswelja.jmdict.generator
+package com.boswelja.edrdg.generator
 
 import com.boswelja.xmldtd.codegen.DataClassGenerator
 import com.boswelja.xmldtd.deserialize.DocumentTypeDefinition

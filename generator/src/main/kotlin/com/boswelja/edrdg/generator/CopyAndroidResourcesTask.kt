@@ -1,4 +1,4 @@
-package com.boswelja.jmdict.generator
+package com.boswelja.edrdg.generator
 
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask

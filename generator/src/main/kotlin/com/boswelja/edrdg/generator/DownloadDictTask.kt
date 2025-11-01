@@ -1,4 +1,4 @@
-package com.boswelja.jmdict.generator
+package com.boswelja.edrdg.generator
 
 import com.squareup.zstd.okio.zstdCompress
 import okio.buffer
@@ -19,19 +19,19 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-abstract class DownloadJmDictTask : DefaultTask() {
+abstract class DownloadDictTask : DefaultTask() {
 
     /**
      * The URL for the full JMDict archive.
      */
     @get:Input
-    abstract val jmDictUrl: Property<URI>
+    abstract val dictUrl: Property<URI>
 
     /**
      * The file to store the output jmdict.
      */
     @get:OutputFile
-    abstract val outputJmDict: RegularFileProperty
+    abstract val outputDict: RegularFileProperty
 
     @get:OutputFile
     abstract val outputDtd: RegularFileProperty
@@ -45,7 +45,7 @@ abstract class DownloadJmDictTask : DefaultTask() {
     @OptIn(ExperimentalTime::class)
     @TaskAction
     fun downloadAndUnpackJmDict() {
-        val outputJmDictFile = outputJmDict.get().asFile
+        val outputJmDictFile = outputDict.get().asFile
         // If the jmdict file exists and is not older than 24 hours, return
         if (outputJmDictFile.exists()) {
             val lastModifiedInstant = Instant.fromEpochMilliseconds(outputJmDictFile.lastModified())
@@ -54,11 +54,11 @@ abstract class DownloadJmDictTask : DefaultTask() {
             }
         }
 
-        val jmDictStream = outputJmDict.get().asFile.sink().zstdCompress().buffer()
+        val jmDictStream = outputDict.get().asFile.sink().zstdCompress().buffer()
         val releaseNotesOutputStream = outputReleaseNotes.get().asFile.outputStream().writer()
         val dtdOutputStream = outputDtd.get().asFile.outputStream().writer()
 
-        val urlConnection = jmDictUrl.get().toURL().openConnection()
+        val urlConnection = dictUrl.get().toURL().openConnection()
         val inStream = GZIPInputStream(urlConnection.inputStream).bufferedReader()
 
         // Metadata fields
