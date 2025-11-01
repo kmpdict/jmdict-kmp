@@ -17,8 +17,9 @@ kotlin {
             associateWith(this@jvm.compilations.getByName("main"))
         }
     }
+
     androidLibrary {
-        namespace = "com.boswelja.jmdict"
+        namespace = "com.boswelja.jmnedict"
         compileSdk = 36
         minSdk = 23
 
@@ -36,13 +37,15 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
-        androidUnitTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation("org.robolectric:robolectric:4.16")
-            implementation("androidx.test.ext:junit-ktx:1.3.0")
-        }
         getByName("jvmBenchmark").dependencies {
             implementation(libs.kotlinx.benchmark.runtime)
+        }
+        getByName("androidDeviceTest").dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+
+            implementation(libs.androidx.test.core)
+            implementation(libs.androidx.test.runner)
         }
     }
 }
@@ -54,8 +57,8 @@ detekt {
 }
 
 edrdgDict {
-    dictUrl = URI("ftp://ftp.edrdg.org/pub/Nihongo/JMdict.gz")
-    packageName = "com.boswelja.jmdict"
+    dictUrl = URI("ftp://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz")
+    packageName = "com.boswelja.jmnedict"
 }
 
 benchmark {
@@ -66,6 +69,15 @@ benchmark {
 
 publish {
     description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
-    repositoryUrl = "https://github.com/kmpdict/jmdict-kmp"
+    repositoryUrl = "https://github.com/kmpdict/jmnedict-kmp"
     license = "CC-BY-SA-4.0"
+}
+
+afterEvaluate {
+    tasks.withType(org.gradle.jvm.tasks.Jar::class) {
+        if (archiveClassifier.get() == "sources") {
+            dependsOn("generateJmneDictDataClasses")
+            dependsOn("generateJmneDictMetadataObject")
+        }
+    }
 }

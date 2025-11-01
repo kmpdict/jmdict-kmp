@@ -26,6 +26,9 @@ kotlin-multiplatformGradlePlugin = { module = "org.jetbrains.kotlin.multiplatfor
 
 androidx-startup = { module = "androidx.startup:startup-runtime", version = "1.2.0" }
 
+androidx-test-core = { module = "androidx.test:core", version = "1.7.0" }
+androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
+
 boswelja-xmldtd = { module = "io.github.boswelja.xmldtd:codegen", version.ref = "xmldtd-kt" }
 
 okio-core = { module = "com.squareup.okio:okio", version = "3.16.2" }
@@ -34,7 +37,7 @@ okio-zstd = { module = "com.squareup.zstd:zstd-kmp-okio", version = "0.4.0" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 
 [plugins]
-android-library = { id = "com.android.library" }
+android-library = { id = "com.android.kotlin.multiplatform.library" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

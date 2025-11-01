@@ -19,10 +19,15 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "jmdict-kmp"
+rootProject.name = "edrdg-kmp"
 
 includeBuild("generator")
 
-include(":jmdict")
+include(
+    ":core",
+    ":jmdict",
+    ":jmnedict",
+    "kanjidic2",
+)
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
