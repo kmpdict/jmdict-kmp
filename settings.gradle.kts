@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "jmdict-kmp"
+rootProject.name = "edrdg-kmp"
 
 includeBuild("generator")
 
