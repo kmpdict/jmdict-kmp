@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.KotlinMultiplatform
-
 plugins {
     id("com.vanniktech.maven.publish")
 }
@@ -18,7 +16,7 @@ version = findProperty("version")!!
 afterEvaluate {
     publishing {
         repositories {
-            maven("https://maven.pkg.github.com/kmpdict/jmdict-kmp") {
+            maven("https://maven.pkg.github.com/kmpdict/edrdg-kmp") {
                 name = "github"
                 credentials(PasswordCredentials::class)
             }

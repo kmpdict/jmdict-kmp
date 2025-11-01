@@ -68,8 +68,8 @@ benchmark {
 }
 
 publish {
-    description = "Pre-packaged Japanese-Multilingual dictionary for all your Kotlin Multiplatform needs!"
-    repositoryUrl = "https://github.com/kmpdict/jmnedict-kmp"
+    description = "Pre-packaged Japanese-Multilingual name dictionary for all your Kotlin Multiplatform needs!"
+    repositoryUrl = "https://github.com/kmpdict/edrdg-kmp/tree/main/jmnedict"
     license = "CC-BY-SA-4.0"
 }
 

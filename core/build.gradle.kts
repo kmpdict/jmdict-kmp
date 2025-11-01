@@ -48,6 +48,6 @@ detekt {
 
 publish {
     description = "Shared utilities for the EDRDG-KMP project"
-    repositoryUrl = "https://github.com/kmpdict/jmdict-kmp"
+    repositoryUrl = "https://github.com/kmpdict/edrdg-kmp/tree/main/core"
     license = "CC-BY-SA-4.0"
 }
